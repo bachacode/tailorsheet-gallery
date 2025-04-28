@@ -2,7 +2,7 @@ import { DataTable } from '@/components/data-table';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, usePage } from '@inertiajs/react';
-import { columns, Image } from './columns';
+import { createColumns, Image } from './columns';
 import { useState } from 'react';
 import { DataGrid } from '@/components/data-grid';
 import { Grid, List } from "lucide-react"
@@ -17,10 +17,24 @@ const breadcrumbs: BreadcrumbItem[] = [
 export default function Index() {
 
     const [view, setView] = useState<'table' | 'grid'>('grid');
+    const [copiedState, setCopiedState] = useState<Record<number, boolean>>({});
     const handleViewChange = (newView: 'table' | 'grid') => {
         setView(newView);
     };
+    const handleCopy = (id: number, filename: string) => {
+        const domain = window.location.origin; // Get the current domain
+        const fullUrl = `${domain}/storage/${filename}`; // Construct the full URL
+        navigator.clipboard.writeText(fullUrl); // Copy to clipboard
 
+        // Update the copied state for this row
+        setCopiedState((prev) => ({ ...prev, [id]: true }));
+
+        // Reset the copied state after 2 seconds
+        setTimeout(() => {
+          setCopiedState((prev) => ({ ...prev, [id]: false }));
+        }, 1000);
+      };
+    const columns = createColumns(copiedState, handleCopy);
     const { images } = (usePage().props as unknown) as { images: Image[] };
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
