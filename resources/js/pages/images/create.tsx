@@ -65,12 +65,13 @@ export default function CreateImage() {
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        setIsUploading(true)
+
         if (images.length === 0) {
             setError("Debes subir al menos un archivo.");
             return;
         }
 
+        setIsUploading(true)
         // Use FormData to handle file uploads
         const formData = new FormData();
         images.forEach((image, index) => {
