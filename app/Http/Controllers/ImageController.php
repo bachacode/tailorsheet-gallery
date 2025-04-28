@@ -27,7 +27,7 @@ class ImageController extends Controller
      */
     public function create()
     {
-        //
+        return inertia('images/create');
     }
 
     /**
@@ -36,20 +36,19 @@ class ImageController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'title' => 'required|max:255',
-            'description' => 'nullable',
-            'image' => 'required|image|max:2048',
+            'images.*' => 'required|image|max:51200', // Validate each file
         ]);
 
-        $path = $request->file('image')->store('images', 'public');
+        $uploadedImages = [];
+        foreach ($request->file('images') as $file) {
+            $path = $file->store('images', 'public');
 
-        $image = $request->user()->images()->create([
-            'title' => $request->title,
-            'description' => $request->description,
-            'filename' => $path,
-        ]);
-
-        return redirect()->route('images.show', $image)->with('success', 'Image uploaded!');
+            $uploadedImages[] = $request->user()->images()->create([
+                'title' => pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME), // Use file name as title
+                'filename' => $path,
+            ]);
+        }
+        return redirect()->route('images.index')->with('success', 'Imágenes subidas correctamente!');
     }
 
     /**

@@ -1,11 +1,12 @@
 import { DataTable } from '@/components/data-table';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
-import { Head, usePage } from '@inertiajs/react';
+import { Head, Link, usePage } from '@inertiajs/react';
 import { columns, Image } from './columns';
 import { useState } from 'react';
 import { DataGrid } from '@/components/data-grid';
 import { Grid, List } from "lucide-react"
+
 const breadcrumbs: BreadcrumbItem[] = [
     {
         title: 'Imagenes',
@@ -23,8 +24,13 @@ export default function Index() {
     const { images } = (usePage().props as unknown) as { images: Image[] };
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <div className='p-8'>
-                <Head title="Imagenes" />
+            <Head title="Imagenes" />
+            <div className='p-8 space-y-4'>
+                <div className='flex justify-end items-center'>
+                    <Link href="/images/create" className="bg-blue-500 hover:bg-blue-400 transition-colors text-white px-4 py-2 rounded">
+                        Añadir nueva imagen
+                    </Link>
+                </div>
                 <div className="flex justify-between items-center mb-4">
                     <h1 className="text-3xl font-bold">Lista de imagenes</h1>
                     <div className="flex space-x-2">
