@@ -41,13 +41,16 @@ class ImageController extends Controller
 
         $uploadedImages = [];
         foreach ($request->file('images') as $file) {
-            $path = $file->store('images', 'public');
+            $path = $file->store('images', 'public'); // Store the file in the 'images' folder
+
+            $filename = basename($path); // Extract only the filename
 
             $uploadedImages[] = $request->user()->images()->create([
                 'title' => pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME), // Use file name as title
-                'filename' => $path,
+                'filename' => $filename, // Save only the filename
             ]);
         }
+
         return redirect()->route('images.index')->with('success', 'Imágenes subidas correctamente!');
     }
 
