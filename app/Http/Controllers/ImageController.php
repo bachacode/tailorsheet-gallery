@@ -51,7 +51,7 @@ class ImageController extends Controller
             ]);
         }
 
-        return redirect()->route('images.index')->with('success', 'Imágenes subidas correctamente!');
+        return to_route('images.index')->with('success', 'Imágenes subidas correctamente!');
     }
 
     /**
