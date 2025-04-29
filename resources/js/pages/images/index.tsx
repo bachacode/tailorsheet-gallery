@@ -1,7 +1,7 @@
 import { DataTable } from '@/components/data-table';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
-import { Head, Link, usePage } from '@inertiajs/react';
+import { Head, Link, router, usePage,  } from '@inertiajs/react';
 import { createColumns, Image } from './columns';
 import { useEffect, useState } from 'react';
 import { DataGrid } from '@/components/data-grid';
@@ -37,7 +37,19 @@ export default function Index() {
       setCopiedState((prev) => ({ ...prev, [id]: false }));
     }, 1000);
   };
-  const columns = createColumns(copiedState, handleCopy);
+
+  const handleDelete = (id: number) => {
+    router.delete(`/images/${id}`, {
+      onSuccess: () => {
+        toast.success('Imagen eliminada correctamente', {
+          closeButton: true,
+          duration: 3000,
+          position: 'top-right',
+        });
+      }
+    });
+  }
+  const columns = createColumns(copiedState, handleCopy, handleDelete);
 
 
   useEffect(() => {

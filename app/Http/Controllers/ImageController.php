@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class ImageController extends Controller
 {
@@ -84,6 +85,14 @@ class ImageController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        /** @var \App\Models\User */
+        $user = Auth::user();
+        $image = $user->images()->findOrFail($id);
+
+        // Delete the image file from storage
+        Storage::disk('public')->delete('images/' . $image->filename);
+
+        // Delete the image record from the database
+        $image->delete();
     }
 }
