@@ -1,17 +1,10 @@
 import { ColumnDef } from "@tanstack/react-table";
-import { ArrowUpDown, Check, Clipboard, MoreHorizontal } from "lucide-react";
+import { Check, Clipboard, Edit, Trash } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { DataTableColumnHeader } from "@/components/data-table-column-header";
+import { formatFileSize } from "@/lib/utils";
 
 // This type is used to define the shape of our data.
 export type Image = {
@@ -19,6 +12,7 @@ export type Image = {
   title: string;
   description: string;
   filename: string;
+  size: number;
   created_at: string;
 };
 
@@ -47,15 +41,29 @@ export const createColumns = (
           ),
   },
   {
-    accessorKey: "id",
+    id: "image",
+    accessorKey: "image",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="ID" />
+      <DataTableColumnHeader column={column} title="Imagen" />
     ),
+    cell: ({ row }) => {
+      const image = row.original;
+      return (
+        <div className="flex items-center space-x-2">
+          <img
+            src={`/storage/images/${image.filename}`}
+            alt={image.title}
+            className="object-cover"
+          />
+        </div>
+      );
+    }
   },
   {
+    id: "title",
     accessorKey: "title",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Title" />
+      <DataTableColumnHeader column={column} title="Titulo" />
     ),
     cell: ({ row }) => {
       const image = row.original;
@@ -69,8 +77,11 @@ export const createColumns = (
     },
   },
   {
+    id: "filename",
     accessorKey: "filename",
-    header: "File Name",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Nombre del archivo" />
+    ),
     cell: ({ row }) => {
       const image = row.original;
       const isCopied = copiedState[image.id] || false; // Check if this row is copied
@@ -101,48 +112,99 @@ export const createColumns = (
     },
   },
   {
+    id: "size",
+    accessorKey: "size",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Tamaño" />
+    ),
+    cell: ({ row }) => {
+      const image = row.original;
+      return (
+        <div className="max-w-[150px] truncate" title={`${image.size} bytes`}>
+          {formatFileSize(image.size)}
+        </div>
+      );
+    },
+  },
+  {
+    id: "created_at",
     accessorKey: "created_at",
-    header: ({ column }) => {
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Subido en" />
+    ),
+    cell: ({ row }) => {
+      const image = row.original;
+
+      // Format the date to DD/MM/YYYY
+      const formattedDate = new Date(image.created_at).toLocaleDateString("es-ES", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+      });
+      return (
+        <div className="max-w-[150px] truncate" title={formattedDate}>
+          {formattedDate}
+        </div>
+      );
+    },
+  },
+  {
+    id: "clipboard_action",
+    cell: ({ row }) => {
+      const image = row.original;
+      const isCopied = copiedState[image.id] || false; // Check if this row is copied
+
       return (
         <Button
           variant="ghost"
-          className="cursor-pointer"
-          onClick={() =>
-            column.toggleSorting(column.getIsSorted() === "asc")
-          }
+          className="flex items-center px-1 max-w-[150px] truncate cursor-pointer ml-6`"
+          onClick={() => handleCopy(image.id, image.filename)} // Call the handler
+          aria-label="Copy file path"
         >
-          Created At
-          <ArrowUpDown className="ml-2 h-4 w-4" />
+          {isCopied ? (
+            <span className="text-green-500">
+              <Check className="h-4 w-4" />
+            </span>
+          ) : (
+            <span>
+              <Clipboard className="h-4 w-4 text-muted-foreground" />
+            </span>
+          )}
         </Button>
       );
     },
   },
-
-{
+  {
     id: "actions",
     header: "Acciones",
     cell: ({ row }) => {
-      const image = row.original
+      const image = row.original;
 
       return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0 cursor-pointer">
-              <span className="sr-only">Abrir menú</span>
-              <MoreHorizontal className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Acciones</DropdownMenuLabel>
-            <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(image.filename)}
-            >
-              Copiar URL
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-          </DropdownMenuContent>
-        </DropdownMenu>
-      )
+        <div className="flex space-x-2">
+          {/* Edit Button */}
+          <Button
+            variant="ghost"
+            className="h-8 w-8 p-0 cursor-pointer"
+            onClick={() => console.log(`Editing image with ID: ${image.id}`)}
+            aria-label="Editar"
+          >
+            <span className="sr-only">Editar</span>
+            <Edit className="h-4 w-4 text-muted-foreground" />
+          </Button>
+
+          {/* Delete Button */}
+          <Button
+            variant="ghost"
+            className="h-8 w-8 p-0 cursor-pointer text-red-500 hover:text-red-700"
+            onClick={() => console.log(`Deleting image with ID: ${image.id}`)}
+            aria-label="Eliminar"
+          >
+            <span className="sr-only">Eliminar</span>
+            <Trash className="h-4 w-4" />
+          </Button>
+        </div>
+      );
     },
   },
 ];

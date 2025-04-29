@@ -97,7 +97,7 @@ export function DataGrid<TData, TValue>({
                 className="m-2 py-0 gap-0 overflow-hidden border rounded-md hover:shadow-md transition-shadow"
                 data-state={row.getIsSelected() && "selected"}
               >
-                <CardContent className="px-8 py-16 flex flex-col items-center justify-center">
+                <CardContent className="px-0 flex flex-col items-center justify-center">
                   {contentCells.map((cell) => (
                     <div key={cell.id} className="flex flex-col items-center justify-center w-full">
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}

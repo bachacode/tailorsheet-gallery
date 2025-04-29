@@ -15,6 +15,7 @@ class Image extends Model
     'title',
     'description',
     'filename',
+    'size',
     ];
 
     public function user(): BelongsTo

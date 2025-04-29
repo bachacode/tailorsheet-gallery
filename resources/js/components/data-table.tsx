@@ -1,4 +1,4 @@
-import * as React from "react"
+import * as React from "react";
 
 import {
   ColumnDef,
@@ -10,7 +10,7 @@ import {
   ColumnFiltersState,
   getFilteredRowModel,
   useReactTable,
-} from "@tanstack/react-table"
+} from "@tanstack/react-table";
 
 import {
   Table,
@@ -19,15 +19,17 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table"
-import { Input } from "./ui/input"
-import DataTablePagination from "./data-table-pagination"
-import { Search } from "lucide-react"
+} from "@/components/ui/table";
+import { Input } from "./ui/input";
+import DataTablePagination from "./data-table-pagination";
+import { Search } from "lucide-react";
+
 interface DataTableProps<TData, TValue> {
-  columns: ColumnDef<TData, TValue>[]
-  data: TData[]
-  filterField?: string
-  filterPlaceholder?: string
+  columns: ColumnDef<TData, TValue>[];
+  data: TData[];
+  filterField?: string;
+  filterPlaceholder?: string;
+  visibleColumns?: string[]; // Optional array of column IDs to display
 }
 
 export function DataTable<TData, TValue>({
@@ -35,17 +37,23 @@ export function DataTable<TData, TValue>({
   data,
   filterField = "id",
   filterPlaceholder = "Buscar...",
+  visibleColumns,
 }: DataTableProps<TData, TValue>) {
-
-  const [sorting, setSorting] = React.useState<SortingState>([])
-  const [rowSelection, setRowSelection] = React.useState({})
+  const [sorting, setSorting] = React.useState<SortingState>([]);
+  const [rowSelection, setRowSelection] = React.useState({});
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
-  )
+  );
+
+  // Filter columns based on visibleColumns prop
+  const filteredColumns = React.useMemo(() => {
+    if (!visibleColumns) return columns; // Show all columns if visibleColumns is not defined
+    return columns.filter((column) => visibleColumns.includes(column.id as string));
+  }, [columns, visibleColumns]);
 
   const table = useReactTable({
     data,
-    columns,
+    columns: filteredColumns, // Use filtered columns
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     onSortingChange: setSorting,
@@ -58,7 +66,7 @@ export function DataTable<TData, TValue>({
       columnFilters,
       rowSelection,
     },
-  })
+  });
 
   return (
     <div className="w-full space-y-4">
@@ -68,12 +76,14 @@ export function DataTable<TData, TValue>({
         <Input
           placeholder={filterPlaceholder}
           value={(table.getColumn(filterField)?.getFilterValue() as string) ?? ""}
-          onChange={(event) => table.getColumn(filterField)?.setFilterValue(event.target.value)}
+          onChange={(event) =>
+            table.getColumn(filterField)?.setFilterValue(event.target.value)
+          }
           className="pl-10 max-w-full"
         />
       </div>
 
-      <DataTablePagination table={table}/>
+      <DataTablePagination table={table} />
 
       <div className="rounded-md border">
         <Table>
@@ -86,11 +96,11 @@ export function DataTable<TData, TValue>({
                       {header.isPlaceholder
                         ? null
                         : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
+                            header.column.columnDef.header,
+                            header.getContext()
+                          )}
                     </TableHead>
-                  )
+                  );
                 })}
               </TableRow>
             ))}
@@ -104,14 +114,20 @@ export function DataTable<TData, TValue>({
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext()
+                      )}
                     </TableCell>
                   ))}
                 </TableRow>
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={columns.length} className="h-24 text-center">
+                <TableCell
+                  colSpan={filteredColumns.length}
+                  className="h-24 text-center"
+                >
                   Sin resultados.
                 </TableCell>
               </TableRow>
@@ -122,5 +138,5 @@ export function DataTable<TData, TValue>({
 
       <DataTablePagination table={table} />
     </div>
-  )
+  );
 }
