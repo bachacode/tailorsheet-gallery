@@ -6,6 +6,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { DataTableColumnHeader } from "@/components/data-table-column-header";
 import { formatFileSize } from "@/lib/utils";
 import { ConfirmDialog } from "@/components/confirm-dialog";
+import { Link } from "@inertiajs/react";
 
 // This type is used to define the shape of our data.
 export type Image = {
@@ -185,16 +186,15 @@ export const createColumns = (
         return (
           <div className="flex space-x-2">
             {/* Edit Button */}
+            <Link aria-label="Editar" href={`/images/${image.id}/edit`} className="h-8 w-8 p-0 cursor-pointer">
             <Button
               variant="ghost"
               className="h-8 w-8 p-0 cursor-pointer"
-              onClick={() => console.log(`Editing image with ID: ${image.id}`)}
-              aria-label="Editar"
             >
               <span className="sr-only">Editar</span>
               <Edit className="h-4 w-4 text-muted-foreground" />
             </Button>
-
+            </Link>
             {/* Delete Button */}
             <ConfirmDialog
             dialogDescription={`Esta acción no se podrá revertir. Estás a punto de eliminar permanentemente la imagen ${image.title}. ¿Confirmas esta acción?`}
