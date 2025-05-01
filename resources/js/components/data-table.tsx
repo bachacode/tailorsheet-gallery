@@ -27,15 +27,15 @@ import { Search } from "lucide-react";
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
-  filterField?: string;
+  filterFields?: string[]; // Array of column IDs to search
   filterPlaceholder?: string;
-  visibleColumns?: string[]; // Optional array of column IDs to display
+  visibleColumns?: string[];
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
-  filterField = "id",
+  filterFields = ["id"], // Default to searching by "id"
   filterPlaceholder = "Buscar...",
   visibleColumns,
 }: DataTableProps<TData, TValue>) {
@@ -44,6 +44,7 @@ export function DataTable<TData, TValue>({
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
   );
+  const [globalFilter, setGlobalFilter] = React.useState<string>("");
 
   // Filter columns based on visibleColumns prop
   const filteredColumns = React.useMemo(() => {
@@ -51,8 +52,29 @@ export function DataTable<TData, TValue>({
     return columns.filter((column) => visibleColumns.includes(column.id as string));
   }, [columns, visibleColumns]);
 
+  // Filter data based on globalFilter and filterFields
+  const filteredData = React.useMemo(() => {
+    if (!globalFilter) return data;
+
+    return data.filter((row) =>
+      filterFields.some((field) => {
+        const value = row[field as keyof TData];
+
+        // Handle arrays (e.g., tags)
+        if (Array.isArray(value)) {
+          return value.some((item) =>
+            item.name?.toString().toLowerCase().includes(globalFilter.toLowerCase())
+          );
+        }
+
+        // Handle strings and other types
+        return value?.toString().toLowerCase().includes(globalFilter.toLowerCase());
+      })
+    );
+  }, [data, globalFilter, filterFields]);
+
   const table = useReactTable({
-    data,
+    data: filteredData, // Use filtered data
     columns: filteredColumns, // Use filtered columns
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
@@ -75,10 +97,8 @@ export function DataTable<TData, TValue>({
         <Search className="absolute left-3 h-4 w-4 text-muted-foreground" />
         <Input
           placeholder={filterPlaceholder}
-          value={(table.getColumn(filterField)?.getFilterValue() as string) ?? ""}
-          onChange={(event) =>
-            table.getColumn(filterField)?.setFilterValue(event.target.value)
-          }
+          value={globalFilter}
+          onChange={(event) => setGlobalFilter(event.target.value)} // Update global filter
           className="pl-10 max-w-full"
         />
       </div>

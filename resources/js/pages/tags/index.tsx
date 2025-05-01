@@ -106,7 +106,7 @@ export default function Index() {
           </div>
           <div className='w-2/3'>
             <h2 className="text-2xl font-bold pb-3">Lista de etiquetas</h2>
-            <DataTable columns={columns} data={tags} filterField='name' visibleColumns={['select', 'name', 'created_at', 'actions']} />
+            <DataTable columns={columns} data={tags} filterFields={['name']} visibleColumns={['select', 'name', 'created_at', 'actions']} />
           </div>
         </div>
       </div>

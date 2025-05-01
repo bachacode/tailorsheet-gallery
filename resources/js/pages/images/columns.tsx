@@ -83,6 +83,24 @@ export const createColumns = (
       },
     },
     {
+      id: "description",
+      accessorKey: "description",
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title="Descripción" />
+      ),
+      cell: ({ row }) => {
+        const image = row.original;
+        return (
+          <div className="max-w-[150px] truncate">
+          {image.description ?
+            ( <span title={image.description}>{image.description}</span>) :
+            (<span className="text-gray-600">Sin descripción...</span>)
+          }
+        </div>
+        );
+      },
+    },
+    {
       id: "tags",
       accessorKey: "tags",
       header: ({ column }) => (
@@ -91,7 +109,7 @@ export const createColumns = (
       cell: ({ row }) => {
         const image = row.original;
         return (
-          <div className="flex max-w-[150px] flex-wrap gap-2" title={image.title}>
+          <div className="flex max-w-[150px] flex-wrap gap-2">
             {image.tags.map((tag) => (
               <Badge>{tag.name}</Badge>
             ))}
