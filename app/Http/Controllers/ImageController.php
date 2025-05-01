@@ -18,7 +18,7 @@ class ImageController extends Controller
         /** @var \App\Models\User */
         $user = Auth::user();
 
-        $images = $user->images()->latest()->get();
+        $images = $user->images()->with('tags')->latest()->get();
 
         return inertia('images/index', [
             'images' => $images,

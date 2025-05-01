@@ -86,7 +86,7 @@ export default function Index() {
             </button>
           </div>
         </div>
-        {view === 'grid' ? <DataGrid columns={columns} contentColumns={['image']} footerColumns={['size', 'clipboard_action', 'actions']} data={images} filterField='title' /> : <DataTable columns={columns} data={images} filterField='title' visibleColumns={['select', 'title', 'filename', 'size', 'created_at', 'actions']} />}
+        {view === 'grid' ? <DataGrid columns={columns} contentColumns={['image']} footerColumns={['size', 'clipboard_action', 'actions']} data={images} filterField='title' /> : <DataTable columns={columns} data={images} filterField='title' visibleColumns={['select', 'title', 'filename', 'tags', 'size', 'created_at', 'actions']} />}
       </div>
     </AppLayout>
   );

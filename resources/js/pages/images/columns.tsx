@@ -8,6 +8,7 @@ import { formatFileSize } from "@/lib/utils";
 import { ConfirmDialog } from "@/components/confirm-dialog";
 import { Link } from "@inertiajs/react";
 import { Tag } from "../tags/columns";
+import { Badge } from "@/components/ui/badge";
 
 // This type is used to define the shape of our data.
 export type Image = {
@@ -77,6 +78,23 @@ export const createColumns = (
             {image.title.length > 50
               ? `${image.title.slice(0, 50)}...`
               : image.title}
+          </div>
+        );
+      },
+    },
+    {
+      id: "tags",
+      accessorKey: "tags",
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title="Etiquetas" />
+      ),
+      cell: ({ row }) => {
+        const image = row.original;
+        return (
+          <div className="flex max-w-[150px] flex-wrap gap-2" title={image.title}>
+            {image.tags.map((tag) => (
+              <Badge>{tag.name}</Badge>
+            ))}
           </div>
         );
       },
