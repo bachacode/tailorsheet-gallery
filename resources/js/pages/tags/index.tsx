@@ -25,7 +25,7 @@ export type TagForm = {
 export default function Index() {
   const { tags, flash } = (usePage().props as unknown) as { tags: Tag[]; flash: { success: string } };
   const serverErrors = usePage().props.errors;
-  const { data, setData, post, processing, errors } = useForm<Required<TagForm>>({
+  const { data, setData, post, processing, errors, reset } = useForm<Required<TagForm>>({
     name: ''
   });
   const handleDelete = (id: number) => {
@@ -44,7 +44,9 @@ export default function Index() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    post(route('tags.store'))
+    post(route('tags.store'), {
+      onSuccess: () => reset('name')
+    })
   };
 
 
