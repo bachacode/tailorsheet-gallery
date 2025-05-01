@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Image;
+use App\Models\Tag;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -71,22 +73,20 @@ class ImageController extends Controller
     {
         /** @var \App\Models\User */
         $user = Auth::user();
-        $image = $user->images()->findOrFail($id);
+        $image = $user->images()->with('tags')->findOrFail($id);
+        $tags = Tag::all();
 
         return inertia('images/edit', [
             'image' => $image,
+            'tags' => $tags
         ]);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, Image $image)
     {
-        /** @var \App\Models\User */
-        $user = Auth::user();
-        $image = $user->images()->findOrFail($id);
-
         // Validate the input
         $request->validate([
             'title' => 'required|string|max:255',
@@ -115,6 +115,8 @@ class ImageController extends Controller
                 },
             ],
             'description' => 'nullable|string|max:255',
+            'tags' => 'nullable|array', // Ensure tags is an array
+            'tags.*' => 'integer|exists:tags,id', // Ensure each tag is a valid integer and exists in the tags table
         ]);
 
         // Store the original filename in case we need to revert
@@ -136,6 +138,9 @@ class ImageController extends Controller
                 'filename' => $request->filename,
                 'description' => $request->description,
             ]);
+
+            // Sync the tags
+            $image->tags()->sync($request->tags);
 
             return redirect()->route('images.index')->with('success', 'Imagen actualizada correctamente.');
         } catch (\Exception $e) {

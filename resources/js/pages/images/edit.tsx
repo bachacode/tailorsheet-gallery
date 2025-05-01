@@ -10,11 +10,14 @@ import AppLayout from "@/layouts/app-layout";
 import { BreadcrumbItem } from "@/types";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
+import { Tag } from "../tags/columns";
+import { MultiSelect } from "@/components/multiselect";
 
 type ImageForm = {
   title: string;
   description: string;
   filename: string;
+  tags?: string[];
 }
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -30,29 +33,38 @@ const breadcrumbs: BreadcrumbItem[] = [
 
 
 export default function EditImage() {
+  const { image, tags, flash } = usePage().props as unknown as {
+    image: Image;
+    tags: Tag[];
+    flash: { error: string };
+  };
 
-  const { image, flash } = usePage().props as unknown as { image: Image, flash: { error: string } };
+  const tagsList: { value: string; label: string }[] = tags.map((tag) => ({
+    value: tag.id.toString(),
+    label: tag.name,
+  }));
 
   const { data, setData, patch, processing, errors } = useForm<Required<ImageForm>>({
     title: image.title,
     description: image.description,
     filename: image.filename,
+    tags: (image.tags) ? image.tags.map((tag) => tag.id.toString()) : [], // Initialize with existing tags
   });
 
   const submit: FormEventHandler = (e) => {
     e.preventDefault();
-    // Proceed with the patch request if no errors
     patch(route("images.update", { id: image.id }));
   };
 
-    useEffect(() => {
-      if (flash && flash.error) {
-        toast.error(flash.error, {
-          closeButton: true,
-          duration: 3000,
-          position: 'top-right',
-        });
-  }}, [flash]);
+  useEffect(() => {
+    if (flash && flash.error) {
+      toast.error(flash.error, {
+        closeButton: true,
+        duration: 3000,
+        position: "top-right",
+      });
+    }
+  }, [flash]);
 
   return (
     <AppLayout breadcrumbs={breadcrumbs}>
@@ -62,7 +74,6 @@ export default function EditImage() {
         <form className="flex flex-col gap-6" onSubmit={submit}>
           <div className="grid gap-6">
             <div className="grid gap-4 grid-cols-2">
-
               <div>
                 <Label htmlFor="title">Titulo</Label>
                 <Input
@@ -72,7 +83,7 @@ export default function EditImage() {
                   autoFocus
                   tabIndex={1}
                   value={data.title}
-                  onChange={(e) => setData('title', e.target.value)}
+                  onChange={(e) => setData("title", e.target.value)}
                   placeholder="Titulo de la imagen"
                 />
                 <InputError message={errors.title} />
@@ -84,30 +95,36 @@ export default function EditImage() {
                   id="filename"
                   type="text"
                   required
-                  autoFocus
                   tabIndex={2}
                   value={data.filename}
-                  onChange={(e) => setData('filename', e.target.value)}
+                  onChange={(e) => setData("filename", e.target.value)}
                   placeholder="Nombre del archivo"
                 />
                 <InputError message={errors.filename} />
               </div>
             </div>
 
+            {/* MultiSelect Component */}
+            <MultiSelect
+              options={tagsList}
+              onValueChange={(selectedTags) => setData("tags", selectedTags)} // Update tags in useForm
+              defaultValue={data.tags} // Initialize with existing tags
+              placeholder="Selecciona las etiquetas"
+              variant="inverted"
+              maxCount={3}
+            />
+            <InputError message={errors.tags} />
+
             <div className="grid gap-2">
               <Label htmlFor="description">Descripción</Label>
               <Textarea
                 id="description"
                 value={data.description}
-                onChange={(e) => setData('description', e.target.value)}
+                onChange={(e) => setData("description", e.target.value)}
                 placeholder="Descripción de la imagen"
                 tabIndex={3}
-                autoFocus
-                ></Textarea>
+              ></Textarea>
               <InputError message={errors.description} />
-            </div>
-
-            <div className="grid gap-2">
             </div>
 
             <Button type="submit" className="mt-4 w-full" tabIndex={4} disabled={processing}>
@@ -118,5 +135,5 @@ export default function EditImage() {
         </form>
       </div>
     </AppLayout>
-  )
+  );
 }

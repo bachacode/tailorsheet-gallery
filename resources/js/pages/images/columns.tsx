@@ -7,6 +7,7 @@ import { DataTableColumnHeader } from "@/components/data-table-column-header";
 import { formatFileSize } from "@/lib/utils";
 import { ConfirmDialog } from "@/components/confirm-dialog";
 import { Link } from "@inertiajs/react";
+import { Tag } from "../tags/columns";
 
 // This type is used to define the shape of our data.
 export type Image = {
@@ -15,6 +16,7 @@ export type Image = {
   description: string;
   filename: string;
   size: number;
+  tags: Tag[];
   created_at: string;
 };
 
