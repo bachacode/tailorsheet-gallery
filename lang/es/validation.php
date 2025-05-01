@@ -199,6 +199,7 @@ return [
         'password_confirmation' => 'confirmación de contraseña',
         'email' => 'correo electrónico',
         'username' => 'nombre de usuario',
+        'name' => "nombre"
     ],
 
 ];
