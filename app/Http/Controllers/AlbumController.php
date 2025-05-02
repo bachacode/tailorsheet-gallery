@@ -1,0 +1,132 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Album;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+
+class AlbumController extends Controller
+{
+    /**
+     * Display a listing of the resource.
+     */
+    public function index()
+    {
+        /** @var \App\Models\User */
+        $user = Auth::user();
+
+        $albums = $user->albums()->with(['tags', 'images'])->withCount('images')->latest()->get();
+
+        return inertia('albums/index', [
+            'albums' => $albums,
+        ]);
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     */
+    public function create()
+    {
+        /** @var \App\Models\User */
+        $user = Auth::user();
+
+        $images = $user->images()->with('tags')->latest()->get();
+        $tags = $user->tags()->latest()->get();
+        return inertia('albums/create', [
+            'images' => $images,
+            'tags' => $tags
+        ]);
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store(Request $request)
+    {
+        $request->validate([
+            'title' => 'required|string|max:255',
+            'description' => 'nullable|string|max:255',
+            'images' => 'nullable|array',
+            'images.*' => 'integer|exists:images,id',
+            'tags' => 'nullable|array',
+            'tags.*' => 'integer|exists:tags,id',
+        ]);
+
+        $album = $request->user()->albums()->create([
+            'title' => $request->title,
+            'description' => $request->description
+        ]);
+
+        $album->tags()->sync($request->tags);
+        $album->images()->sync($request->images);
+
+        return redirect()->route('albums.index')->with('success', '¡Álbum creado correctamente!');
+    }
+
+    /**
+     * Display the specified resource.
+     */
+    public function show(string $id)
+    {
+        //
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit(string $id)
+    {
+        /** @var \App\Models\User */
+        $user = Auth::user();
+        $album = $user->albums()->with(['tags', 'images'])->findOrFail($id);
+        $images = $user->images()->with('tags')->latest()->get();
+        $tags = $user->tags()->latest()->get();
+        return inertia('albums/edit', [
+            'album' => $album,
+            'images' => $images,
+            'tags' => $tags
+        ]);
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(Request $request, Album $album)
+    {
+        $request->validate([
+            'title' => 'required|string|max:255',
+            'description' => 'nullable|string|max:255',
+            'cover_image' => 'nullable|string|max:255',
+            'images' => 'nullable|array',
+            'images.*' => 'integer|exists:images,id',
+            'tags' => 'nullable|array',
+            'tags.*' => 'integer|exists:tags,id',
+        ]);
+
+        $album->update([
+            'title' => $request->title,
+            'description' => $request->description,
+            'cover_image' => $request->cover_image
+        ]);
+
+        $album->tags()->sync($request->tags);
+        $album->images()->sync($request->images);
+
+        return redirect()->route('albums.index')->with('success', '¡Álbum actualizado correctamente!');
+
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(string $id)
+    {
+        /** @var \App\Models\User */
+        $user = Auth::user();
+        $image = $user->albums()->findOrFail($id);
+
+        // Delete the image record from the database
+        $image->delete();
+    }
+}

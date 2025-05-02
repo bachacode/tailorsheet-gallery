@@ -28,4 +28,9 @@ class Image extends Model
     {
         return $this->belongsToMany(Tag::class, 'images_tags');
     }
+
+    public function albums(): BelongsToMany
+    {
+        return $this->belongsToMany(Album::class, 'albums_images');
+    }
 }

@@ -139,7 +139,7 @@ export function DataGrid<TData, TValue>({
                   ))}
                 </CardContent>
                 {footerCells.length > 0 && (
-                  <CardFooter className="p-2 flex justify-end gap-2 border-t bg-muted/20">
+                  <CardFooter className="p-2 flex gap-1.5 justify-between border-t bg-muted/20">
                     {footerCells.map((cell) => (
                       <div key={cell.id} className="flex items-center">
                         {flexRender(
