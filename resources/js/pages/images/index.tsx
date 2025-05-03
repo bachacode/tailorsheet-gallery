@@ -3,7 +3,7 @@ import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
 import { Head, router, usePage, } from '@inertiajs/react';
 import { createColumns, Image } from './columns';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { DataGrid } from '@/components/common/data-grid';
 import { toast } from 'sonner';
 import AppFeatureLayout from '@/layouts/app/app-feature-layout';
@@ -20,17 +20,15 @@ const breadcrumbs: BreadcrumbItem[] = [
   },
 ];
 
-type usePageProps = {
+interface PageProps {
   images: Image[];
-  flash: {
-    success: string
-  }
+  [x: string]: unknown;
 }
 
 export default function Index() {
   const [view, setView] = useState<'table' | 'grid'>('grid');
   const [copiedState, setCopiedState] = useState<Record<number, boolean>>({});
-  const { images, flash } = (usePage().props as unknown) as usePageProps;
+  const { images } = usePage<PageProps>().props
 
   const handleCopy = (id: number, filename: string) => {
     const domain = window.location.origin; // Get the current domain
@@ -60,16 +58,6 @@ export default function Index() {
 
   const columns = createColumns(copiedState, handleCopy, handleDelete);
 
-  useEffect(() => {
-    if (flash && flash.success) {
-      toast.success(flash.success, {
-        closeButton: true,
-        duration: 3000,
-        position: 'top-right',
-      });
-    }
-  }, [flash]);
-
   return (
     <AppLayout breadcrumbs={breadcrumbs}>
       <Head title="Imagenes" />
@@ -78,7 +66,7 @@ export default function Index() {
         action={{ route: 'images.create', text: 'Añadir nueva imagen' }}
       >
         <DataTableToggle view={view} setView={setView}/>
-        {view === 'grid' ? <DataGrid columns={columns} contentColumns={['image']} footerColumns={['size', 'clipboard_action', 'actions']} data={images} filterFields={['title', 'description', 'tags']} /> : <DataTable columns={columns} data={images} filterFields={['title', 'description', 'tags']} visibleColumns={['select', 'title', 'filename', 'tags', 'description', 'size', 'created_at', 'actions']} />}
+        {view === 'grid' ? <DataGrid columns={columns} contentColumns={['image']} footerColumns={['size', 'actions']} data={images} filterFields={['title', 'description', 'tags']} /> : <DataTable columns={columns} data={images} filterFields={['title', 'description', 'tags']} visibleColumns={['select', 'title', 'filename', 'tags', 'description', 'size', 'created_at', 'actions']} />}
       </AppFeatureLayout>
     </AppLayout>
   );

@@ -92,11 +92,11 @@ export const createColumns = (
         const image = row.original;
         return (
           <div className="max-w-[150px] truncate">
-          {image.description ?
-            ( <span title={image.description}>{image.description}</span>) :
-            (<span className="text-gray-600">Sin descripción...</span>)
-          }
-        </div>
+            {image.description ?
+              (<span title={image.description}>{image.description}</span>) :
+              (<span className="text-gray-600">Sin descripción...</span>)
+            }
+          </div>
         );
       },
     },
@@ -189,54 +189,69 @@ export const createColumns = (
         );
       },
     },
-    {
-      id: "clipboard_action",
-      cell: ({ row }) => {
-        const image = row.original;
-        const isCopied = copiedState[image.id] || false; // Check if this row is copied
+    // {
+    //   id: "clipboard_action",
+    //   cell: ({ row }) => {
+    //     const image = row.original;
+    //     const isCopied = copiedState[image.id] || false; // Check if this row is copied
 
-        return (
-          <Button
-            variant="ghost"
-            className="flex items-center px-1 max-w-[150px] truncate cursor-pointer ml-6`"
-            onClick={() => handleCopy(image.id, image.filename)} // Call the handler
-            aria-label="Copy file path"
-          >
-            {isCopied ? (
-              <span className="text-green-500">
-                <Check className="h-4 w-4" />
-              </span>
-            ) : (
-              <span>
-                <Clipboard className="h-4 w-4 text-muted-foreground" />
-              </span>
-            )}
-          </Button>
-        );
-      },
-    },
+    //     return (
+    //       <Button
+    //         variant="ghost"
+    //         className="flex items-center px-1 max-w-[150px] truncate cursor-pointer ml-6`"
+    //         onClick={() => handleCopy(image.id, image.filename)} // Call the handler
+    //         aria-label="Copy file path"
+    //       >
+    //         {isCopied ? (
+    //           <span className="text-green-500">
+    //             <Check className="h-4 w-4" />
+    //           </span>
+    //         ) : (
+    //           <span>
+    //             <Clipboard className="h-4 w-4 text-muted-foreground" />
+    //           </span>
+    //         )}
+    //       </Button>
+    //     );
+    //   },
+    // },
     {
       id: "actions",
       header: "Acciones",
       cell: ({ row }) => {
         const image = row.original;
-
+        const isCopied = copiedState[image.id] || false; // Check if this row is copied
         return (
-          <div className="flex space-x-2">
-            {/* Edit Button */}
-            <Link aria-label="Editar" href={`/images/${image.id}/edit`} className="h-8 w-8 p-0 cursor-pointer">
+          <div className="flex space-x-0.5">
+
+            {/* Copy Button */}
             <Button
               variant="ghost"
-              className="h-8 w-8 p-0 cursor-pointer"
+              className="flex items-center px-1 h-8 w-8 p-0 cursor-pointer"
+              onClick={() => handleCopy(image.id, image.filename)} // Call the handler
+              aria-label="Copiar ruta del archivo"
             >
-              <span className="sr-only">Editar</span>
-              <Edit className="h-4 w-4 text-muted-foreground" />
+              {isCopied ? (
+                <Check className="h-4 w-4 text-green-500" />
+              ) : (
+                <Clipboard className="h-4 w-4 text-muted-foreground" />
+              )}
             </Button>
+
+            {/* Edit Button */}
+            <Link aria-label="Editar" href={`/images/${image.id}/edit`} className="h-8 w-8 p-0 cursor-pointer">
+              <Button
+                variant="ghost"
+                className="h-8 w-8 p-0 cursor-pointer"
+              >
+                <span className="sr-only">Editar</span>
+                <Edit className="h-4 w-4 text-muted-foreground" />
+              </Button>
             </Link>
             {/* Delete Button */}
             <ConfirmDialog
-            dialogDescription={`Esta acción no se podrá revertir. Estás a punto de eliminar permanentemente la imagen ${image.title}. ¿Confirmas esta acción?`}
-            handleConfirm={() => handleDelete(image.id)}>
+              dialogDescription={`Esta acción no se podrá revertir. Estás a punto de eliminar permanentemente la imagen ${image.title}. ¿Confirmas esta acción?`}
+              handleConfirm={() => handleDelete(image.id)}>
               <Button
                 variant="ghost"
                 className="h-8 w-8 p-0 cursor-pointer text-red-500 hover:text-red-700"

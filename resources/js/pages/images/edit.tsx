@@ -1,4 +1,4 @@
-import { FormEventHandler, useEffect } from "react";
+import { FormEventHandler } from "react";
 import { Head, useForm, usePage } from "@inertiajs/react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -7,7 +7,6 @@ import { Image } from "./columns";
 import AppLayout from "@/layouts/app-layout";
 import { BreadcrumbItem } from "@/types";
 import { Textarea } from "@/components/ui/textarea";
-import { toast } from "sonner";
 import { Tag } from "../tags/columns";
 import { MultiSelect } from "@/components/common/multiselect";
 import AppFormLayout from "@/layouts/app/app-form-layout";
@@ -34,17 +33,15 @@ const breadcrumbs: BreadcrumbItem[] = [
   }
 ];
 
-type usePageProps = {
+interface PageProps {
   image: Image;
   tags: Tag[];
-  flash: {
-    error: string
-  }
+  [x: string]: unknown;
 }
 
 
 export default function EditImage() {
-  const { image, tags, flash } = usePage().props as unknown as usePageProps
+  const { image, tags } = usePage<PageProps>().props
 
   const tagsList: { value: string; label: string }[] = tags.map((tag) => ({
     value: tag.id.toString(),
@@ -62,16 +59,6 @@ export default function EditImage() {
     e.preventDefault();
     patch(route("images.update", { id: image.id }));
   };
-
-  useEffect(() => {
-    if (flash && flash.error) {
-      toast.error(flash.error, {
-        closeButton: true,
-        duration: 3000,
-        position: "top-right",
-      });
-    }
-  }, [flash]);
 
   return (
     <AppLayout breadcrumbs={breadcrumbs}>
