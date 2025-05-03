@@ -1,10 +1,10 @@
-import { DataTable } from '@/components/data-table';
+import { DataTable } from '@/components/common/data-table';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, router, usePage, } from '@inertiajs/react';
 import { createColumns, Image } from './columns';
 import { useEffect, useState } from 'react';
-import { DataGrid } from '@/components/data-grid';
+import { DataGrid } from '@/components/common/data-grid';
 import { Grid, List } from "lucide-react"
 import { toast } from 'sonner';
 

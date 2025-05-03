@@ -1,4 +1,4 @@
-import { DataTable } from '@/components/data-table';
+import { DataTable } from '@/components/common/data-table';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
 import { Head, router, useForm, usePage, } from '@inertiajs/react';
@@ -7,7 +7,7 @@ import React, { useEffect } from 'react';
 import { toast } from 'sonner';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
-import InputError from '@/components/input-error';
+import InputError from '@/components/common/input-error';
 import { Button } from '@/components/ui/button';
 import { LoaderCircle } from 'lucide-react';
 

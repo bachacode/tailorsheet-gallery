@@ -2,7 +2,7 @@ import AppLayout from "@/layouts/app-layout";
 import { BreadcrumbItem } from "@/types";
 import { Button } from "@/components/ui/button";
 import { Head, router } from "@inertiajs/react";
-import ImageUploader, { ImagePreview } from "@/components/image-uploader";
+import ImageUploader, { ImagePreview } from "@/components/images/image-uploader";
 import { useState } from "react";
 
 const breadcrumbs: BreadcrumbItem[] = [

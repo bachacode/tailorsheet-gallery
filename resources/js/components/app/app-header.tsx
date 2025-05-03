@@ -1,11 +1,11 @@
-import { Breadcrumbs } from '@/components/breadcrumbs';
-import { Icon } from '@/components/icon';
+import { Breadcrumbs } from '@/components/app/breadcrumbs';
+import { Icon } from '@/components/common/icon';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { NavigationMenu, NavigationMenuItem, NavigationMenuList, navigationMenuTriggerStyle } from '@/components/ui/navigation-menu';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
-import { UserMenuContent } from '@/components/user-menu-content';
+import { UserMenuContent } from '@/components/settings/user-menu-content';
 import { useInitials } from '@/hooks/use-initials';
 import { cn } from '@/lib/utils';
 import { type BreadcrumbItem, type NavItem, type SharedData } from '@/types';
@@ -17,22 +17,22 @@ import AppLogoIcon from './app-logo-icon';
 const mainNavItems: NavItem[] = [
     {
         title: 'Dashboard',
-        href: route('dashboard'),
+        href: 'dashboard',
         icon: LayoutGrid,
     },
     {
         title: 'Imagenes',
-        href: route('images.index'),
+        href: 'images.index',
         icon: LucideImage,
     },
     {
       title: 'Álbumes',
-      href: route('albums.index'),
+      href: 'albums.index',
       icon: LucideImages,
     },
     {
       title: 'Etiquetas',
-      href: route('tags.index'),
+      href: 'tags.index',
       icon: LucideTag,
     }
 ];
@@ -68,7 +68,7 @@ export function AppHeader({ breadcrumbs = [] }: AppHeaderProps) {
                                     <div className="flex h-full flex-col justify-between text-sm">
                                         <div className="flex flex-col space-y-4">
                                             {mainNavItems.map((item) => (
-                                                <Link key={item.title} href={item.href} className="flex items-center space-x-2 font-medium">
+                                                <Link key={item.title} href={route(item.href)} className="flex items-center space-x-2 font-medium">
                                                     {item.icon && <Icon iconNode={item.icon} className="h-5 w-5" />}
                                                     <span>{item.title}</span>
                                                 </Link>
@@ -81,7 +81,7 @@ export function AppHeader({ breadcrumbs = [] }: AppHeaderProps) {
                         </Sheet>
                     </div>
 
-                    <Link href="/dashboard" prefetch className="flex items-center space-x-2">
+                    <Link href={route('dashboard')} prefetch className="flex items-center space-x-2">
                         <AppLogo />
                     </Link>
 
@@ -92,10 +92,10 @@ export function AppHeader({ breadcrumbs = [] }: AppHeaderProps) {
                                 {mainNavItems.map((item, index) => (
                                     <NavigationMenuItem key={index} className="relative flex h-full items-center">
                                         <Link
-                                            href={item.href}
+                                            href={route(item.href)}
                                             className={cn(
                                                 navigationMenuTriggerStyle(),
-                                                page.url === item.href && activeItemStyles,
+                                                route().current(item.href) && activeItemStyles,
                                                 'h-9 cursor-pointer px-3',
                                             )}
                                         >

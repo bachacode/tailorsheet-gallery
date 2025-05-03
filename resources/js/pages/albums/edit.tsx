@@ -3,12 +3,12 @@ import { BreadcrumbItem } from "@/types";
 import { Button } from "@/components/ui/button";
 import { Head, useForm, usePage } from "@inertiajs/react";
 import { Image as ImageType } from "../images/columns";
-import GalleryPicker from "@/components/gallery-picker";
-import InputError from "@/components/input-error";
+import GalleryPicker from "@/components/albums/gallery-picker";
+import InputError from "@/components/common/input-error";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Tag } from "../tags/columns";
-import { MultiSelect } from "@/components/multiselect";
+import { MultiSelect } from "@/components/common/multiselect";
 import { Textarea } from "@/components/ui/textarea";
 import { Album } from "./columns";
 const breadcrumbs: BreadcrumbItem[] = [

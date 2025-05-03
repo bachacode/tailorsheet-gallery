@@ -1,8 +1,8 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { Trash } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
-import { DataTableColumnHeader } from "@/components/data-table-column-header";
-import { ConfirmDialog } from "@/components/confirm-dialog";
+import { DataTableColumnHeader } from "@/components/common/data-table-column-header";
+import { ConfirmDialog } from "@/components/common/confirm-dialog";
 import { EditDialog } from "./edit-dialog";
 
 // This type is used to define the shape of our data.

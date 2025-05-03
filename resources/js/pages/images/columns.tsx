@@ -3,9 +3,9 @@ import { Check, Clipboard, Edit, Trash } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import { DataTableColumnHeader } from "@/components/data-table-column-header";
+import { DataTableColumnHeader } from "@/components/common/data-table-column-header";
 import { formatFileSize } from "@/lib/utils";
-import { ConfirmDialog } from "@/components/confirm-dialog";
+import { ConfirmDialog } from "@/components/common/confirm-dialog";
 import { Link } from "@inertiajs/react";
 import { Tag } from "../tags/columns";
 import { Badge } from "@/components/ui/badge";

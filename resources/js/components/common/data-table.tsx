@@ -20,7 +20,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Input } from "./ui/input";
+import { Input } from "../ui/input";
 import DataTablePagination from "./data-table-pagination";
 import { Search } from "lucide-react";
 
