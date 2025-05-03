@@ -1,9 +1,9 @@
 import AppLayout from "@/layouts/app-layout";
 import { BreadcrumbItem } from "@/types";
-import { Button } from "@/components/ui/button";
 import { Head, router } from "@inertiajs/react";
 import ImageUploader, { ImagePreview } from "@/components/images/image-uploader";
 import { useState } from "react";
+import AppFormLayout from "@/layouts/app/app-form-layout";
 
 const breadcrumbs: BreadcrumbItem[] = [
   {
@@ -90,27 +90,24 @@ export default function CreateImage() {
   return (
     <AppLayout breadcrumbs={breadcrumbs}>
       <Head title="Subir imágenes" />
-      <div className="p-8 space-y-6">
-        <h1 className="text-2xl font-bold">Subir Imágenes</h1>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Multiple File Upload Field */}
-          <ImageUploader
-            images={images}
-            isUploading={isUploading}
-            onAddImages={handleAddImages}
-            onRemoveImage={handleRemoveImage}
-          />
-          {/* Error Message */}
-          {error && <p className="text-red-500 text-sm text-center">{error}</p>}
-
-          {/* Submit Button */}
-          <div className="flex justify-center">
-            <Button type="submit" disabled={isUploading} className="bg-blue-500 hover:bg-blue-400 min-w-xs transition-colors text-white px-4 py-6 rounded cursor-pointer">
-              {isUploading ? "Subiendo imagenes..." : "Subir imagenes"}
-            </Button>
-          </div>
-        </form>
-      </div>
+      <AppFormLayout
+        headerTitle='Subir imagenes'
+        backRoute="images.index"
+        onSubmit={handleSubmit}
+        submitText="Subir imagenes"
+        processing={isUploading}
+        onProcessText="Subiendo imagenes..."
+      >
+        {/* Multiple File Upload Field */}
+        <ImageUploader
+          images={images}
+          isUploading={isUploading}
+          onAddImages={handleAddImages}
+          onRemoveImage={handleRemoveImage}
+        />
+        {/* Error Message */}
+        {error && <p className="text-red-500 text-sm text-center">{error}</p>}
+      </AppFormLayout>
     </AppLayout>
   );
 }
