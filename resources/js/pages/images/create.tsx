@@ -4,6 +4,7 @@ import { Head, router } from "@inertiajs/react";
 import ImageUploader, { ImagePreview } from "@/components/images/image-uploader";
 import { useState } from "react";
 import AppFormLayout from "@/layouts/app/app-form-layout";
+import FormField from "@/components/common/form-field";
 
 const breadcrumbs: BreadcrumbItem[] = [
   {
@@ -23,10 +24,9 @@ const breadcrumbs: BreadcrumbItem[] = [
 export default function CreateImage() {
   const [images, setImages] = useState<ImagePreview[]>([]);
   const [isUploading, setIsUploading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string>();
 
-  const handleAddImages = (files: File[]) => {
-    setError(null); // Clear any previous errors
+  const handleAddImages = (files: File[]) => {// Clear any previous errors
     setIsUploading(true);
 
     // Validate file extensions
@@ -99,14 +99,19 @@ export default function CreateImage() {
         onProcessText="Subiendo imagenes..."
       >
         {/* Multiple File Upload Field */}
+        <FormField
+        id="images"
+        label="Imagenes"
+        inputType="custom"
+        error={error}
+        >
         <ImageUploader
           images={images}
           isUploading={isUploading}
           onAddImages={handleAddImages}
           onRemoveImage={handleRemoveImage}
         />
-        {/* Error Message */}
-        {error && <p className="text-red-500 text-sm text-center">{error}</p>}
+        </FormField>
       </AppFormLayout>
     </AppLayout>
   );

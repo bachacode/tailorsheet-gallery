@@ -1,15 +1,12 @@
 import { FormEventHandler } from "react";
 import { Head, useForm, usePage } from "@inertiajs/react";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-import InputError from "@/components/common/input-error";
 import { Image } from "./columns";
 import AppLayout from "@/layouts/app-layout";
 import { BreadcrumbItem } from "@/types";
-import { Textarea } from "@/components/ui/textarea";
 import { Tag } from "../tags/columns";
 import { MultiSelect } from "@/components/common/multiselect";
 import AppFormLayout from "@/layouts/app/app-form-layout";
+import FormField from "@/components/common/form-field";
 
 type ImageForm = {
   title: string;
@@ -75,40 +72,47 @@ export default function EditImage() {
         {/* Titulo y nombre del archivo */}
         <div className="grid gap-4 grid-cols-2">
           {/* Titulo */}
-          <div className="grid gap-2">
-            <Label htmlFor="title">Titulo</Label>
-            <Input
-              id="title"
-              type="text"
-              required
-              autoFocus
-              tabIndex={1}
-              value={data.title}
-              onChange={(e) => setData("title", e.target.value)}
-              placeholder="Titulo de la imagen"
-            />
-            <InputError message={errors.title} />
-          </div>
+          <FormField
+            id="title"
+            label="Título"
+            inputType="input"
+            error={errors.title}
+            inputProps={{
+              required: true,
+              autoFocus: true,
+              tabIndex: 1,
+              value: data.title,
+              onChange: (e) => setData("title", e.target.value),
+              placeholder: "Título de la imagen"
+            }}
+          />
 
           {/* Nombre del archivo */}
-          <div className="grid gap-2">
-            <Label htmlFor="filename">Nombre del archivo</Label>
-            <Input
-              id="filename"
-              type="text"
-              required
-              tabIndex={2}
-              value={data.filename}
-              onChange={(e) => setData("filename", e.target.value)}
-              placeholder="Nombre del archivo"
-            />
-            <InputError message={errors.filename} />
-          </div>
+          <FormField
+            id="filename"
+            label="Nombre del archivo"
+            inputType="input"
+            error={errors.filename}
+            inputProps={{
+              required: true,
+              autoFocus: true,
+              tabIndex: 2,
+              value: data.filename,
+              onChange: (e) => setData("filename", e.target.value),
+              placeholder: "example.jpg"
+            }}
+          />
         </div>
 
         {/* Lista de etiquetas */}
-        <div className="grid gap-2">
+        <FormField
+          id="tags"
+          label="Etiquetas"
+          inputType="custom"
+          error={errors.tags}
+        >
           <MultiSelect
+            id="tags"
             options={tagsList}
             onValueChange={(selectedTags) => setData("tags", selectedTags)} // Update tags in useForm
             defaultValue={data.tags} // Initialize with existing tags
@@ -117,23 +121,25 @@ export default function EditImage() {
             tabIndex={3}
             maxCount={3}
           />
-          <InputError message={errors.tags} />
-        </div>
+        </FormField>
+
 
         {/* Descripción */}
-        <div className="grid gap-2">
-          <Label htmlFor="description">Descripción</Label>
-          <Textarea
-            id="description"
-            value={data.description}
-            onChange={(e) => setData("description", e.target.value)}
-            placeholder="Descripción de la imagen"
-            tabIndex={4}
-            className="h-40"
-          ></Textarea>
-          <InputError message={errors.description} />
-        </div>
-
+        <FormField
+          id="description"
+          label="Descripción"
+          inputType="textarea"
+          error={errors.description}
+          inputProps={{
+            required: true,
+            autoFocus: true,
+            tabIndex: 4,
+            value: data.description,
+            onChange: (e) => setData("description", e.target.value),
+            placeholder: "Descripción de la imagen",
+            className: "h-40"
+          }}
+        />
       </AppFormLayout>
     </AppLayout>
   );
