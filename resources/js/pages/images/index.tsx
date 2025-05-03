@@ -1,7 +1,7 @@
 import { DataTable } from '@/components/data-table';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
-import { Head, Link, router, usePage,  } from '@inertiajs/react';
+import { Head, Link, router, usePage, } from '@inertiajs/react';
 import { createColumns, Image } from './columns';
 import { useEffect, useState } from 'react';
 import { DataGrid } from '@/components/data-grid';
@@ -10,19 +10,26 @@ import { toast } from 'sonner';
 
 const breadcrumbs: BreadcrumbItem[] = [
   {
+    title: 'Inicio',
+    href: route('dashboard')
+  },
+  {
     title: 'Imagenes',
-    href: '/images',
+    href: route('images.index'),
   },
 ];
 
-export default function Index() {
+type usePageProps = {
+  images: Image[];
+  flash: {
+    success: string
+  }
+}
 
+export default function Index() {
   const [view, setView] = useState<'table' | 'grid'>('grid');
   const [copiedState, setCopiedState] = useState<Record<number, boolean>>({});
-  const { images, flash } = (usePage().props as unknown) as { images: Image[]; flash: { success: string } };
-  const handleViewChange = (newView: 'table' | 'grid') => {
-    setView(newView);
-  };
+  const { images, flash } = (usePage().props as unknown) as usePageProps;
 
   const handleCopy = (id: number, filename: string) => {
     const domain = window.location.origin; // Get the current domain
@@ -39,9 +46,9 @@ export default function Index() {
   };
 
   const handleDelete = (id: number) => {
-    router.delete(`/images/${id}`, {
+    router.delete(route('images.destroy', { id: id }), {
       onSuccess: () => {
-        toast.success('Imagen eliminada correctamente', {
+        toast.success('¡Imagen eliminada correctamente!', {
           closeButton: true,
           duration: 3000,
           position: 'top-right',
@@ -49,17 +56,19 @@ export default function Index() {
       }
     });
   }
+
   const columns = createColumns(copiedState, handleCopy, handleDelete);
 
-
   useEffect(() => {
-      if (flash && flash.success) {
-        toast.success(flash.success, {
-          closeButton: true,
-          duration: 3000,
-          position: 'top-right',
-        });
-  }}, [flash]);
+    if (flash && flash.success) {
+      toast.success(flash.success, {
+        closeButton: true,
+        duration: 3000,
+        position: 'top-right',
+      });
+    }
+  }, [flash]);
+
   return (
     <AppLayout breadcrumbs={breadcrumbs}>
       <Head title="Imagenes" />
@@ -73,13 +82,13 @@ export default function Index() {
           <h1 className="text-3xl font-bold">Lista de imagenes</h1>
           <div className="flex space-x-2">
             <button
-              onClick={() => handleViewChange('grid')}
+              onClick={() => setView("grid")}
               className={`px-4 py-2 rounded cursor-pointer ${view === 'grid' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-800'}`}
             >
               <Grid className="h-4 w-4" />
             </button>
             <button
-              onClick={() => handleViewChange('table')}
+              onClick={() => setView("table")}
               className={`px-4 py-2 rounded cursor-pointer ${view === 'table' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-800'}`}
             >
               <List className="h-4 w-4" />

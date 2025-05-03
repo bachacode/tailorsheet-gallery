@@ -17,7 +17,6 @@ class ImageController extends Controller
     {
         /** @var \App\Models\User */
         $user = Auth::user();
-
         $images = $user->images()->with('tags')->latest()->get();
 
         return inertia('images/index', [
@@ -55,15 +54,7 @@ class ImageController extends Controller
             ]);
         }
 
-        return to_route('images.index')->with('success', 'Imágenes subidas correctamente!');
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
+        return to_route('images.index')->with('success', '¡Imágenes subidas correctamente!');
     }
 
     /**
@@ -73,13 +64,16 @@ class ImageController extends Controller
     {
         /** @var \App\Models\User */
         $user = Auth::user();
-        $image = $user->images()->with('tags')->findOrFail($id);
-        $tags = Tag::all();
-
-        return inertia('images/edit', [
-            'image' => $image,
-            'tags' => $tags
-        ]);
+        try {
+            $image = $user->images()->with('tags')->findOrFail($id);
+            $tags = Tag::all();
+            return inertia('images/edit', [
+                'image' => $image,
+                'tags' => $tags
+            ]);
+        } catch (\Throwable $th) {
+            abort(404);
+        }
     }
 
     /**

@@ -17,22 +17,22 @@ import AppLogoIcon from './app-logo-icon';
 const mainNavItems: NavItem[] = [
     {
         title: 'Dashboard',
-        href: '/dashboard',
+        href: route('dashboard'),
         icon: LayoutGrid,
     },
     {
         title: 'Imagenes',
-        href: '/images',
+        href: route('images.index'),
         icon: LucideImage,
     },
     {
       title: 'Álbumes',
-      href: '/albums',
+      href: route('albums.index'),
       icon: LucideImages,
     },
     {
       title: 'Etiquetas',
-      href: '/tags',
+      href: route('tags.index'),
       icon: LucideTag,
     }
 ];

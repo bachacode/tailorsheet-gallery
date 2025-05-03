@@ -7,11 +7,16 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
 Route::middleware(['auth', 'verified'])->group(function () {
+
+    // Dashboard
     Route::get('dashboard', function () {
         return Inertia::render('dashboard');
     })->name('dashboard');
 
-    Route::resource('images', ImageController::class)->except(['show']);
+    // Imagenes
+    Route::resource('images', ImageController::class)
+    ->except(['show']);
+
     Route::resource('tags', TagController::class)->except(['create', 'show', 'edit']);
     Route::resource('albums', AlbumController::class)->except(['show']);
 });
