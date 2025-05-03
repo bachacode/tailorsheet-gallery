@@ -52,9 +52,56 @@ export default function GalleryPicker({
 
   return (
     <Dialog>
-      <DialogTrigger asChild>
-        <div className="p-6 border border-border bg-card space-y-4">
 
+      <div className="p-6 border border-border bg-card space-y-4">
+        <div>
+          {/* Preview Section */}
+          <div className="flex flex-wrap gap-2 mb-4">
+            {selectedImages.slice(0, maxPreview).map((id) => {
+              const image = images.find((img) => img.id === id);
+              return (
+                <Card
+                  key={image?.id}
+                  className="overflow-hidden group relative border border-border w-40 gap-2 p-0"
+                >
+                  <div className="relative bg-muted">
+                    <img
+                      src={`/storage/images/${image?.filename || "/placeholder.svg"}`}
+                      alt={image?.title}
+                      className="object-cover w-full max-h-24"
+                    />
+                    <Button
+                      size="icon"
+                      variant="destructive"
+                      className="absolute cursor-pointer top-2 right-2 h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
+                      onClick={() => handleImageToggle(image)}
+                    >
+                      <X className="h-3 w-3" />
+                      <span className="sr-only">Eliminar</span>
+                    </Button>
+                  </div>
+                  <CardFooter className="p-2 text-xs mt-auto flex justify-between items-center bg-card text-card-foreground">
+                    <span
+                      className="truncate max-w-1/2"
+                      title={image?.filename}
+                    >
+                      {image?.filename}
+                    </span>
+                    <span className="text-muted-foreground">
+                      {formatFileSize(image?.size ?? 0)}
+                    </span>
+                  </CardFooter>
+                </Card>
+              );
+            })}
+            {selectedImages.length > maxPreview && (
+              <div className="flex items-center justify-center w-40 h-auto rounded-md border text-sm text-muted-foreground">
+                +{selectedImages.length - maxPreview} más
+              </div>
+            )}
+          </div>
+        </div>
+        <DialogTrigger asChild>
           <div
             className={`border-2 border-dashed rounded-lg p-6 flex flex-col items-center justify-center cursor-pointer transition-colors hover:border-gray-600`}
           >
@@ -63,56 +110,8 @@ export default function GalleryPicker({
               Haz clic para escoger las imagénes desde la galería.
             </p>
           </div>
-
-          <div>
-            {/* Preview Section */}
-            <div className="flex flex-wrap gap-2 mb-4">
-              {selectedImages.slice(0, maxPreview).map((id) => {
-                const image = images.find((img) => img.id === id);
-                return (
-                  <Card
-                    key={image?.id}
-                    className="overflow-hidden group relative border border-border w-40 gap-2 p-0"
-                  >
-                    <div className="relative bg-muted">
-                      <img
-                        src={`/storage/images/${image?.filename || "/placeholder.svg"}`}
-                        alt={image?.title}
-                        className="object-cover w-full max-h-24"
-                      />
-                      <Button
-                        size="icon"
-                        variant="destructive"
-                        className="absolute cursor-pointer top-2 right-2 h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
-                        onClick={() => handleImageToggle(image)}
-                      >
-                        <X className="h-3 w-3" />
-                        <span className="sr-only">Eliminar</span>
-                      </Button>
-                    </div>
-                    <CardFooter className="p-2 text-xs mt-auto flex justify-between items-center bg-card text-card-foreground">
-                      <span
-                        className="truncate max-w-1/2"
-                        title={image?.filename}
-                      >
-                        {image?.filename}
-                      </span>
-                      <span className="text-muted-foreground">
-                        {formatFileSize(image?.size ?? 0)}
-                      </span>
-                    </CardFooter>
-                  </Card>
-                );
-              })}
-              {selectedImages.length > maxPreview && (
-                <div className="flex items-center justify-center w-40 h-auto rounded-md border text-sm text-muted-foreground">
-                  +{selectedImages.length - maxPreview} más
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      </DialogTrigger>
+        </DialogTrigger>
+      </div>
       <DialogContent className="sm:max-w-[90%] rounded-sm h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Seleccionar Imágenes</DialogTitle>
