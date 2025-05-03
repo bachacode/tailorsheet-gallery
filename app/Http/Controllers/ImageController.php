@@ -136,7 +136,7 @@ class ImageController extends Controller
             // Sync the tags
             $image->tags()->sync($request->tags);
 
-            return redirect()->route('images.index')->with('success', 'Imagen actualizada correctamente.');
+            return redirect()->route('images.index')->with('success', '¡Imagen actualizada correctamente!');
         } catch (\Exception $e) {
             // Revert the filename in storage if renaming failed
             if ($originalFilename !== $request->filename) {
