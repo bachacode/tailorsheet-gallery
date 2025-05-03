@@ -5,9 +5,9 @@ import { Head, router, usePage, } from '@inertiajs/react';
 import { createColumns, Image } from './columns';
 import { useEffect, useState } from 'react';
 import { DataGrid } from '@/components/common/data-grid';
-import { Grid, List } from "lucide-react"
 import { toast } from 'sonner';
 import AppFeatureLayout from '@/layouts/app/app-feature-layout';
+import DataTableToggle from '@/components/common/data-table-toggle';
 
 const breadcrumbs: BreadcrumbItem[] = [
   {
@@ -77,22 +77,7 @@ export default function Index() {
         title='Mis imagenes'
         action={{ route: 'images.create', text: 'Añadir nueva imagen' }}
       >
-        <div className="flex justify-between items-center mb-8">
-          <div className="flex space-x-2">
-            <button
-              onClick={() => setView("grid")}
-              className={`px-4 py-2 rounded cursor-pointer ${view === 'grid' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-800'}`}
-            >
-              <Grid className="h-4 w-4" />
-            </button>
-            <button
-              onClick={() => setView("table")}
-              className={`px-4 py-2 rounded cursor-pointer ${view === 'table' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-800'}`}
-            >
-              <List className="h-4 w-4" />
-            </button>
-          </div>
-        </div>
+        <DataTableToggle view={view} setView={setView}/>
         {view === 'grid' ? <DataGrid columns={columns} contentColumns={['image']} footerColumns={['size', 'clipboard_action', 'actions']} data={images} filterFields={['title', 'description', 'tags']} /> : <DataTable columns={columns} data={images} filterFields={['title', 'description', 'tags']} visibleColumns={['select', 'title', 'filename', 'tags', 'description', 'size', 'created_at', 'actions']} />}
       </AppFeatureLayout>
     </AppLayout>
