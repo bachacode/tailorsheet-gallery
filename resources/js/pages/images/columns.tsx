@@ -59,7 +59,11 @@ export const createColumns = (
             <img
               src={`/storage/images/${image.filename}`}
               alt={image.title}
-              className="object-cover"
+              className="object-cover aspect-square h-40 my-3 border rounded-md"
+              onError={(e) => {
+                e.currentTarget.onerror = null; // Prevent infinite loop if fallback also fails
+                e.currentTarget.src = "/landscape-placeholder.svg"; // Your fallback image path
+              }}
             />
           </div>
         );
