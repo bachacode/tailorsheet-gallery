@@ -55,10 +55,10 @@ export function EditDialog({id, name}: TagForm) {
         </div>
         </form>
       </div>
-      <DialogFooter>
-        <Button type="submit" onClick={handleSubmit} disabled={processing} className='cursor-pointer'>
+      <DialogFooter className='justify-self-center'>
+        <Button type="submit" onClick={handleSubmit} disabled={processing} className='bg-blue-500 hover:bg-blue-400 min-w-3xs transition-colors text-white px-4 py-6 rounded cursor-pointer'>
         {processing && <LoaderCircle className="h-4 w-4 animate-spin" />}
-          Guardar cambios
+        {processing ? "Guardando cambios..." : "Guardar cambios"}
         </Button>
       </DialogFooter>
     </DialogContent>
