@@ -71,7 +71,7 @@ export default function GalleryPicker({
                     <img
                       src={`/storage/images/${image.filename || "/placeholder.svg"}`}
                       alt={image.title}
-                      className="object-cover w-full max-h-24"
+                      className="object-cover aspect-square h-40"
                     />
                     <Button
                       size="icon"
