@@ -58,7 +58,7 @@ export const createColumns = (
           <div className="flex items-center space-x-2">
             <img
               src={`/storage/images/${imagePath}`}
-              className="object-cover aspect-square h-40 my-3 border rounded-md"
+              className="object-cover aspect-square h-40 my-3 p-0.5 border rounded-md"
               onError={(e) => {
                 e.currentTarget.onerror = null; // Prevent infinite loop if fallback also fails
                 e.currentTarget.src = "/landscape-placeholder.svg"; // Your fallback image path
