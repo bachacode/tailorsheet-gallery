@@ -8,13 +8,6 @@ import { MultiSelect } from "@/components/common/multiselect";
 import AppFormLayout from "@/layouts/app/app-form-layout";
 import FormField from "@/components/common/form-field";
 
-type ImageForm = {
-  title: string;
-  description: string;
-  filename: string;
-  tags?: string[];
-}
-
 const breadcrumbs: BreadcrumbItem[] = [
   {
     title: 'Inicio',
@@ -30,12 +23,18 @@ const breadcrumbs: BreadcrumbItem[] = [
   }
 ];
 
+type ImageForm = {
+  title: string;
+  description: string;
+  filename: string;
+  tags?: string[];
+}
+
 interface PageProps {
   image: Image;
   tags: Tag[];
   [x: string]: unknown;
 }
-
 
 export default function EditImage() {
   const { image, tags } = usePage<PageProps>().props

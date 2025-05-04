@@ -11,24 +11,35 @@ import FormField from "@/components/common/form-field";
 
 const breadcrumbs: BreadcrumbItem[] = [
   {
-    title: "Álbumes",
-    href: "/albums",
+    title: 'Inicio',
+    href: route('dashboard')
   },
   {
-    title: "Editar",
-    href: "/albums/edit",
+    title: 'Álbumes',
+    href: route('albums.index'),
   },
+  {
+    title: 'Editar',
+    href: ''
+  }
 ];
 
-type AlbumForm = {
+interface AlbumForm {
   title: string;
   description: string;
   tags?: string[];
   images?: number[];
 }
 
+interface PageProps {
+  album: Album;
+  images: ImageType[];
+  tags: Tag[];
+  [x: string]: unknown;
+}
+
 export default function CreateImage() {
-  const { album, images, tags } = usePage().props as unknown as { album: Album; images: ImageType[]; tags: Tag[] };
+  const { album, images, tags } = usePage<PageProps>().props;
 
   const tagsList: { value: string; label: string }[] = tags.map((tag) => ({
     value: tag.id.toString(),

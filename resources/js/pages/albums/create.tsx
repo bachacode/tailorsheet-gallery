@@ -7,15 +7,20 @@ import { Tag } from "../tags/columns";
 import { MultiSelect } from "@/components/common/multiselect";
 import AppFormLayout from "@/layouts/app/app-form-layout";
 import FormField from "@/components/common/form-field";
+
 const breadcrumbs: BreadcrumbItem[] = [
   {
-    title: "Álbumes",
-    href: "/albums",
+    title: 'Inicio',
+    href: route('dashboard')
   },
   {
-    title: "Crear",
-    href: "/albums/create",
+    title: 'Álbumes',
+    href: route('albums.index'),
   },
+  {
+    title: 'Crear',
+    href: route('albums.create')
+  }
 ];
 
 interface AlbumForm {
