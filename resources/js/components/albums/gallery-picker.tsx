@@ -8,22 +8,24 @@ import { useState, useMemo } from "react";
 import { formatFileSize } from "@/lib/utils";
 
 interface GalleryPickerProps {
-  images: Image[]; // Array of images to display
-  selectedImageIds?: number[]; // Optional IDs of the initially selected images
-  onSelect: (images: Image[]) => void; // Callback when images are selected
-  maxPreview?: number; // Maximum number of images to show in the preview
+  images: Image[];
+  selectedImageIds: number[];
+  imagesHandler: (image: Image[]) => void;
+  maxPreview?: number;
 }
 
 export default function GalleryPicker({
   images,
   selectedImageIds = [],
-  onSelect,
+  imagesHandler,
   maxPreview = 3,
 }: GalleryPickerProps) {
-  const [selectedImages, setSelectedImages] = useState<number[]>(selectedImageIds);
   const [searchTerm, setSearchTerm] = useState<string>("");
+  const [markedImages, setMarkedImages] = useState<number[]>(selectedImageIds);
+  const selectedImages = useMemo(() => {
+    return images.filter((image) => selectedImageIds.includes(image.id))
+  }, [images, selectedImageIds]);
 
-  // Filter images based on the search term
   const filteredImages = useMemo(() => {
     if (!searchTerm) return images;
     return images.filter((image) =>
@@ -31,24 +33,27 @@ export default function GalleryPicker({
     );
   }, [images, searchTerm]);
 
-  const handleImageToggle = (image?: Image) => {
-    if (!image) return;
-    setSelectedImages((prev) =>
+  const handleToggleMarkedImage = (image: Image) => {
+    setMarkedImages((prev) =>
       prev.includes(image.id)
-        ? prev.filter((id) => id !== image.id) // Deselect if already selected
-        : [...prev, image.id] // Select if not already selected
+        ? prev.filter((id) => id !== image.id)
+        : [...prev, image.id]
     );
   };
 
+  const handleImagePreviewRemove = (image: Image) => {
+    const updated = selectedImages.filter((img) => img.id !== image.id);
+    imagesHandler(updated);
+  };
+
   const handleConfirmSelection = () => {
-    const selected = images.filter((image) => selectedImages.includes(image.id));
-    onSelect(selected); // Call the callback with the selected images
+    const selected = images.filter((img) => markedImages.includes(img.id));
+    imagesHandler(selected);
   };
 
   const handleClearSelection = () => {
-    setSelectedImages([]);
-    onSelect([]); // Clear the selection
-  };
+    setMarkedImages([]);
+  }
 
   return (
     <Dialog>
@@ -57,24 +62,22 @@ export default function GalleryPicker({
         <div>
           {/* Preview Section */}
           <div className="flex flex-wrap gap-2 mb-4">
-            {selectedImages.slice(0, maxPreview).map((id) => {
-              const image = images.find((img) => img.id === id);
-              return (
+            {selectedImages.slice(0, maxPreview).map((image) => (
                 <Card
-                  key={image?.id}
+                  key={image.id}
                   className="overflow-hidden group relative border border-border w-40 gap-2 p-0"
                 >
                   <div className="relative bg-muted">
                     <img
-                      src={`/storage/images/${image?.filename || "/placeholder.svg"}`}
-                      alt={image?.title}
+                      src={`/storage/images/${image.filename || "/placeholder.svg"}`}
+                      alt={image.title}
                       className="object-cover w-full max-h-24"
                     />
                     <Button
                       size="icon"
                       variant="destructive"
                       className="absolute cursor-pointer top-2 right-2 h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
-                      onClick={() => handleImageToggle(image)}
+                      onClick={() => handleImagePreviewRemove(image)}
                     >
                       <X className="h-3 w-3" />
                       <span className="sr-only">Eliminar</span>
@@ -83,17 +86,16 @@ export default function GalleryPicker({
                   <CardFooter className="p-2 text-xs mt-auto flex justify-between items-center bg-card text-card-foreground">
                     <span
                       className="truncate max-w-1/2"
-                      title={image?.filename}
+                      title={image.filename}
                     >
-                      {image?.filename}
+                      {image.filename}
                     </span>
                     <span className="text-muted-foreground">
-                      {formatFileSize(image?.size ?? 0)}
+                      {formatFileSize(image.size ?? 0)}
                     </span>
                   </CardFooter>
                 </Card>
-              );
-            })}
+              ))}
             {selectedImages.length > maxPreview && (
               <div className="flex items-center justify-center w-40 h-auto rounded-md border text-sm text-muted-foreground">
                 +{selectedImages.length - maxPreview} más
@@ -130,9 +132,9 @@ export default function GalleryPicker({
               {filteredImages.map((image) => (
                 <Card
                   key={image.id}
-                  className={`relative overflow-hidden border p-0 gap-0 ${selectedImages.includes(image.id) ? "border-blue-500" : "border-gray-300"
+                  className={`relative overflow-hidden border p-0 gap-0 ${markedImages.includes(image.id) ? "border-blue-500" : "border-gray-300"
                     }`}
-                  onClick={() => handleImageToggle(image)}
+                  onClick={() => handleToggleMarkedImage(image)}
                 >
                   <CardContent className="p-0">
                     <img
@@ -140,7 +142,7 @@ export default function GalleryPicker({
                       alt={image.title}
                       className="object-cover w-full h-36"
                     />
-                    {selectedImages.includes(image.id) && (
+                    {markedImages.includes(image.id) && (
                       <div className="absolute inset-0 bg-blue-500/50 flex items-center justify-center">
                         <Check className="h-10 w-10 text-white" />
                       </div>

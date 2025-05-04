@@ -1,16 +1,14 @@
 import AppLayout from "@/layouts/app-layout";
 import { BreadcrumbItem } from "@/types";
-import { Button } from "@/components/ui/button";
 import { Head, useForm, usePage } from "@inertiajs/react";
 import { Image as ImageType } from "../images/columns";
 import GalleryPicker from "@/components/albums/gallery-picker";
-import InputError from "@/components/common/input-error";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
 import { Tag } from "../tags/columns";
 import { MultiSelect } from "@/components/common/multiselect";
-import { Textarea } from "@/components/ui/textarea";
 import { Album } from "./columns";
+import AppFormLayout from "@/layouts/app/app-form-layout";
+import FormField from "@/components/common/form-field";
+
 const breadcrumbs: BreadcrumbItem[] = [
   {
     title: "Álbumes",
@@ -26,7 +24,7 @@ type AlbumForm = {
   title: string;
   description: string;
   tags?: string[];
-  images?: string[];
+  images?: number[];
 }
 
 export default function CreateImage() {
@@ -41,14 +39,13 @@ export default function CreateImage() {
     title: album.title,
     description: album.description,
     tags: album.tags.map((tag) => tag.id.toString()),
-    images: album.images.map((image) => image.id.toString()),
+    images: album.images.map((image) => image.id),
   });
 
-  const handleImageSelect = (images: ImageType[]) => {
-    const imagesIds = images.map((img) => img.id.toString());
-
+  const updateImages = (images: ImageType[]) => {
+    const imagesIds = images.map((img) => img.id);
     setData('images', imagesIds)
-  }
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -58,75 +55,83 @@ export default function CreateImage() {
   return (
     <AppLayout breadcrumbs={breadcrumbs}>
       <Head title="Editar álbum" />
-      <div className="p-8 space-y-6">
-        <h1 className="text-2xl font-bold">Editar álbum</h1>
-        <form onSubmit={handleSubmit} className="space-y-4">
+      <AppFormLayout
+        headerTitle='Editar álbum'
+        headerDescription={album.title}
+        backRoute="albums.index"
+        onSubmit={handleSubmit}
+        submitText="Guardar cambios"
+        processing={processing}
+        onProcessText="Guardando cambios..."
+      >
+        {/* Titulo del album */}
+        <FormField
+          id="title"
+          label="Título"
+          inputType="input"
+          error={errors.title}
+          inputProps={{
+            required: true,
+            autoFocus: true,
+            tabIndex: 1,
+            value: data.title,
+            onChange: (e) => setData("title", e.target.value),
+            placeholder: "Título del álbum"
+          }}
+        />
 
-          {/* Titulo del album */}
-          <div>
-            <Label htmlFor="title">Titulo</Label>
-            <Input
-              id="title"
-              type="text"
-              required
-              autoFocus
-              tabIndex={1}
-              value={data.title}
-              onChange={(e) => setData("title", e.target.value)}
-              placeholder="Titulo del álbum"
-            />
-            <InputError message={errors.title} />
-          </div>
-
-          {/* Etiquetas */}
-          <div>
-            <Label htmlFor="tags">Etiquetas</Label>
-            <MultiSelect
-              id="tags"
-              options={tagsList}
-              onValueChange={(selectedTags) => setData("tags", selectedTags)} // Update tags in useForm
-              defaultValue={data.tags} // Initialize with existing tags
-              placeholder="Selecciona las etiquetas"
-              variant="inverted"
-              maxCount={3}
-            />
-            <InputError message={errors.tags} />
-          </div>
+        {/* Etiquetas */}
+        <FormField
+          id="tags"
+          label="Etiquetas"
+          inputType="custom"
+          error={errors.tags}
+        >
+          <MultiSelect
+            id="tags"
+            options={tagsList}
+            onValueChange={(selectedTags) => setData("tags", selectedTags)} // Update tags in useForm
+            defaultValue={data.tags} // Initialize with existing tags
+            placeholder="Selecciona las etiquetas"
+            variant="inverted"
+            tabIndex={2}
+            maxCount={3}
+          />
+        </FormField>
 
 
-          {/* Gallery Picker*/}
+        {/* Gallery Picker*/}
+        <FormField
+          id="images"
+          label="Imagenes seleccionadas"
+          inputType="custom"
+          error={errors.images}
+        >
           <GalleryPicker
           images={images}
-          onSelect={handleImageSelect}
+          selectedImageIds={data.images}
+          imagesHandler={updateImages}
           maxPreview={5}
-          selectedImageIds={album.images.map((image) => image.id)}
-          ></GalleryPicker>
-          <InputError message={errors.images}></InputError>
+          />
+        </FormField>
 
 
-
-          {/* Descripcion */}
-          <div className="grid gap-2">
-            <Label htmlFor="description">Descripción</Label>
-            <Textarea
-              id="description"
-              value={data.description}
-              onChange={(e) => setData("description", e.target.value)}
-              placeholder="Descripción del álbum"
-              tabIndex={3}
-              className="min-h-40"
-            ></Textarea>
-            <InputError message={errors.description} />
-          </div>
-
-          {/* Submit Button */}
-          <div className="flex justify-center">
-            <Button type="submit" disabled={processing} className="bg-blue-500 hover:bg-blue-400 min-w-xs transition-colors text-white px-4 py-6 rounded cursor-pointer">
-              {processing ? "Editando álbum..." : "Editar álbum"}
-            </Button>
-          </div>
-        </form>
-      </div>
+        {/* Descripcion */}
+        <FormField
+          id="description"
+          label="Descripción"
+          inputType="textarea"
+          error={errors.description}
+          inputProps={{
+            autoFocus: true,
+            tabIndex: 3,
+            value: data.description,
+            onChange: (e) => setData("description", e.target.value),
+            placeholder: "Descripción de la imagen",
+            className: "h-40"
+          }}
+        />
+      </AppFormLayout>
     </AppLayout>
   );
 }

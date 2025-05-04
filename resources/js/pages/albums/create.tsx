@@ -1,15 +1,12 @@
 import AppLayout from "@/layouts/app-layout";
 import { BreadcrumbItem } from "@/types";
-import { Button } from "@/components/ui/button";
 import { Head, useForm, usePage } from "@inertiajs/react";
 import { Image as ImageType } from "../images/columns";
 import GalleryPicker from "@/components/albums/gallery-picker";
-import InputError from "@/components/common/input-error";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
 import { Tag } from "../tags/columns";
 import { MultiSelect } from "@/components/common/multiselect";
-import { Textarea } from "@/components/ui/textarea";
+import AppFormLayout from "@/layouts/app/app-form-layout";
+import FormField from "@/components/common/form-field";
 const breadcrumbs: BreadcrumbItem[] = [
   {
     title: "Álbumes",
@@ -21,15 +18,21 @@ const breadcrumbs: BreadcrumbItem[] = [
   },
 ];
 
-type AlbumForm = {
+interface AlbumForm {
   title: string;
   description: string;
   tags?: string[];
-  images?: string[];
+  images?: number[];
+}
+
+interface PageProps {
+  images: ImageType[];
+  tags: Tag[];
+  [x: string]: unknown;
 }
 
 export default function CreateImage() {
-  const { images, tags } = usePage().props as unknown as { images: ImageType[]; tags: Tag[] };
+  const { images, tags } = usePage<PageProps>().props;
 
   const tagsList: { value: string; label: string }[] = tags.map((tag) => ({
     value: tag.id.toString(),
@@ -43,11 +46,10 @@ export default function CreateImage() {
     images: [],
   });
 
-  const handleImageSelect = (images: ImageType[]) => {
-    const imagesIds = images.map((img) => img.id.toString());
-
+  const updateImages = (images: ImageType[]) => {
+    const imagesIds = images.map((img) => img.id);
     setData('images', imagesIds)
-  }
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -57,68 +59,82 @@ export default function CreateImage() {
   return (
     <AppLayout breadcrumbs={breadcrumbs}>
       <Head title="Crear álbum" />
-      <div className="p-8 space-y-6">
-        <h1 className="text-2xl font-bold">Crear álbum</h1>
-        <form onSubmit={handleSubmit} className="space-y-4">
+      <AppFormLayout
+        headerTitle='Crear álbum'
+        backRoute="albums.index"
+        onSubmit={handleSubmit}
+        submitText="Crear álbum"
+        processing={processing}
+        onProcessText="Creando álbum..."
+      >
+        {/* Titulo del album */}
+        <FormField
+          id="title"
+          label="Título"
+          inputType="input"
+          error={errors.title}
+          inputProps={{
+            required: true,
+            autoFocus: true,
+            tabIndex: 1,
+            value: data.title,
+            onChange: (e) => setData("title", e.target.value),
+            placeholder: "Título del álbum"
+          }}
+        />
 
-          {/* Titulo del album */}
-          <div>
-            <Label htmlFor="title">Titulo</Label>
-            <Input
-              id="title"
-              type="text"
-              required
-              autoFocus
-              tabIndex={1}
-              value={data.title}
-              onChange={(e) => setData("title", e.target.value)}
-              placeholder="Titulo del álbum"
-            />
-            <InputError message={errors.title} />
-          </div>
-
-          {/* Etiquetas */}
-          <div>
-            <Label htmlFor="tags">Etiquetas</Label>
-            <MultiSelect
-              id="tags"
-              options={tagsList}
-              onValueChange={(selectedTags) => setData("tags", selectedTags)} // Update tags in useForm
-              defaultValue={data.tags} // Initialize with existing tags
-              placeholder="Selecciona las etiquetas"
-              variant="inverted"
-              maxCount={3}
-            />
-            <InputError message={errors.tags} />
-          </div>
+        {/* Etiquetas */}
+        <FormField
+          id="tags"
+          label="Etiquetas"
+          inputType="custom"
+          error={errors.tags}
+        >
+          <MultiSelect
+            id="tags"
+            options={tagsList}
+            onValueChange={(selectedTags) => setData("tags", selectedTags)} // Update tags in useForm
+            defaultValue={data.tags} // Initialize with existing tags
+            placeholder="Selecciona las etiquetas"
+            variant="inverted"
+            tabIndex={2}
+            maxCount={3}
+          />
+        </FormField>
 
 
-          {/* Gallery Picker*/}
-          <GalleryPicker images={images} onSelect={handleImageSelect} maxPreview={5}></GalleryPicker>
-          <InputError message={errors.images}></InputError>
+        {/* Gallery Picker*/}
+        <FormField
+          id="images"
+          label="Imagenes seleccionadas"
+          inputType="custom"
+          error={errors.images}
+        >
+          <GalleryPicker
+          images={images}
+          selectedImageIds={data.images}
+          imagesHandler={updateImages}
+          maxPreview={5}
+          />
+        </FormField>
 
-          {/* Descripcion */}
-          <div className="grid gap-2">
-            <Label htmlFor="description">Descripción</Label>
-            <Textarea
-              id="description"
-              value={data.description}
-              onChange={(e) => setData("description", e.target.value)}
-              placeholder="Descripción del álbum"
-              tabIndex={3}
-              className="min-h-40"
-            ></Textarea>
-            <InputError message={errors.description} />
-          </div>
 
-          {/* Submit Button */}
-          <div className="flex justify-center">
-            <Button type="submit" disabled={processing} className="bg-blue-500 hover:bg-blue-400 min-w-xs transition-colors text-white px-4 py-6 rounded cursor-pointer">
-              {processing ? "Creando álbum..." : "Crear álbum"}
-            </Button>
-          </div>
-        </form>
-      </div>
+        {/* Descripcion */}
+        <FormField
+          id="description"
+          label="Descripción"
+          inputType="textarea"
+          error={errors.description}
+          inputProps={{
+            autoFocus: true,
+            tabIndex: 3,
+            value: data.description,
+            onChange: (e) => setData("description", e.target.value),
+            placeholder: "Descripción de la imagen",
+            className: "h-40"
+          }}
+        />
+      </AppFormLayout>
     </AppLayout>
   );
 }
