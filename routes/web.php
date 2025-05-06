@@ -24,8 +24,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/', 'store')->name('store');
 
         Route::get('/{image}/editar', 'edit')->name('edit');
-        Route::patch('/{image}', 'update')->name('update');
 
+        Route::patch('/{image}', 'update')->name('update');
         Route::delete('/{image}', 'destroy')->name('destroy');
     });
 
@@ -39,7 +39,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/', 'store')->name('store');
 
         Route::patch('/{tag}', 'update')->name('update');
-
         Route::delete('/{tag}', 'destroy')->name('destroy');
     });
 
@@ -50,18 +49,17 @@ Route::middleware(['auth', 'verified'])->group(function () {
     ->group(function () {
         Route::get('/', 'index')->name('index');
 
-        Route::get('/{album}', 'show')->name('show');
-
         Route::get('/crear', 'create')->name('create');
         Route::post('/', 'store')->name('store');
 
         Route::get('/{album}/editar', 'edit')->name('edit');
-        Route::patch('/{album}', 'update')->name('update');
-
         Route::get('/{album}/añadir-imagenes', 'add')->name('add');
         Route::post('/{album}/subir-imagenes', 'upload')->name('upload');
 
+        Route::patch('/{album}', 'update')->name('update');
         Route::delete('/{album}', 'destroy')->name('destroy');
+
+        Route::get('/{album}', 'show')->name('show');
     });
 });
 
