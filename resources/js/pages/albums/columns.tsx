@@ -53,11 +53,18 @@ export const createColumns = (
       ),
       cell: ({ row }) => {
         const album = row.original;
-        const imagePath = (album.cover_image && album.cover_image.length > 0) ? album.cover_image : album.images[0].filename;
+        let imagePath = '';
+        if(album.cover_image && album.cover_image.length > 0) {
+          imagePath = `/storage/images/${album.cover_image}`
+        } else if(album.images.length > 0) {
+          imagePath = `/storage/images/${album.images[0].filename}`
+        } else {
+          imagePath = '/landscape-preview.svg'
+        }
         return (
           <div className="flex items-center space-x-2">
             <img
-              src={`/storage/images/${imagePath}`}
+              src={imagePath}
               className="object-contain aspect-square h-40 my-3 p-0.5 border rounded-md"
               onError={(e) => {
                 e.currentTarget.onerror = null; // Prevent infinite loop if fallback also fails
