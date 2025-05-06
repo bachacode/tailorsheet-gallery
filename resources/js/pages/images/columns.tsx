@@ -193,32 +193,6 @@ export const createColumns = (
         );
       },
     },
-    // {
-    //   id: "clipboard_action",
-    //   cell: ({ row }) => {
-    //     const image = row.original;
-    //     const isCopied = copiedState[image.id] || false; // Check if this row is copied
-
-    //     return (
-    //       <Button
-    //         variant="ghost"
-    //         className="flex items-center px-1 max-w-[150px] truncate cursor-pointer ml-6`"
-    //         onClick={() => handleCopy(image.id, image.filename)} // Call the handler
-    //         aria-label="Copy file path"
-    //       >
-    //         {isCopied ? (
-    //           <span className="text-green-500">
-    //             <Check className="h-4 w-4" />
-    //           </span>
-    //         ) : (
-    //           <span>
-    //             <Clipboard className="h-4 w-4 text-muted-foreground" />
-    //           </span>
-    //         )}
-    //       </Button>
-    //     );
-    //   },
-    // },
     {
       id: "actions",
       header: "Acciones",
@@ -243,7 +217,7 @@ export const createColumns = (
             </Button>
 
             {/* Edit Button */}
-            <Link aria-label="Editar" href={`/images/${image.id}/edit`} className="h-8 w-8 p-0 cursor-pointer">
+            <Link aria-label="Editar" href={route('images.edit', { id: image.id })} className="h-8 w-8 p-0 cursor-pointer">
               <Button
                 variant="ghost"
                 className="h-8 w-8 p-0 cursor-pointer"

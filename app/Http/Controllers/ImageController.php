@@ -3,9 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Image;
-use App\Models\Tag;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Storage;
 
 class ImageController extends Controller
@@ -13,14 +12,10 @@ class ImageController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        /** @var \App\Models\User */
-        $user = Auth::user();
-        $images = $user->images()->with('tags')->latest()->get();
-
         return inertia('images/index', [
-            'images' => $images,
+            'images' => $request->user()->images()->with('tags')->latest()->get(),
         ]);
     }
 
@@ -38,19 +33,19 @@ class ImageController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'images.*' => 'required|image|max:51200', // Validate each file
+            'images.*' => 'required|image|max:51200',
         ]);
 
         foreach ($request->file('images') as $file) {
-            $path = $file->store('images', 'public'); // Store the file in the 'images' folder
+            $path = $file->store('images', 'public');
 
-            $filename = basename($path); // Extract only the filename
-            $size = $file->getSize(); // Get the file size in bytes
+            $filename = basename($path);
+            $size = $file->getSize();
 
             $request->user()->images()->create([
-                'title' => pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME), // Use file name as title
-                'filename' => $filename, // Save only the filename
-                'size' => $size, // Save the file size
+                'title' => pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME),
+                'filename' => $filename,
+                'size' => $size,
             ]);
         }
 
@@ -60,20 +55,18 @@ class ImageController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(Request $request, Image $image)
     {
-        /** @var \App\Models\User */
-        $user = Auth::user();
-        try {
-            $image = $user->images()->with('tags')->findOrFail($id);
-            $tags = Tag::all();
-            return inertia('images/edit', [
-                'image' => $image,
-                'tags' => $tags
-            ]);
-        } catch (\Throwable $th) {
-            abort(404);
+        $response = Gate::inspect('update', $image);
+
+        if(!$response->allowed()) {
+            return to_route('images.index')->with('error', $response->message());
         }
+
+        return inertia('images/edit', [
+            'image' => $image,
+            'tags' => $request->user()->tags()->get()
+        ]);
     }
 
     /**
@@ -81,6 +74,12 @@ class ImageController extends Controller
      */
     public function update(Request $request, Image $image)
     {
+        $response = Gate::inspect('update', $image);
+
+        if(!$response->allowed()) {
+            return to_route('images.index')->with('error', $response->message());
+        }
+
         // Validate the input
         $request->validate([
             'title' => 'required|string|max:255',
@@ -160,11 +159,13 @@ class ImageController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Image $image)
     {
-        /** @var \App\Models\User */
-        $user = Auth::user();
-        $image = $user->images()->findOrFail($id);
+        $response = Gate::inspect('forceDelete', $image);
+
+        if(!$response->allowed()) {
+            return back()->with('error', $response->message());
+        }
 
         // Delete the image file from storage
         Storage::disk('public')->delete('images/' . $image->filename);
