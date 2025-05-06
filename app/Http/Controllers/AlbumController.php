@@ -95,11 +95,10 @@ class AlbumController extends Controller
         /** @var \App\Models\User */
         $user = Auth::user();
         $album = $user->albums()->with(['tags', 'images'])->findOrFail($id);
-        $images = $user->images()->with('tags')->latest()->get();
         $tags = $user->tags()->latest()->get();
+
         return inertia('albums/edit', [
             'album' => $album,
-            'images' => $images,
             'tags' => $tags
         ]);
     }

@@ -2,7 +2,6 @@ import AppLayout from "@/layouts/app-layout";
 import { BreadcrumbItem } from "@/types";
 import { Head, useForm, usePage } from "@inertiajs/react";
 import { Image as ImageType } from "../images/columns";
-import GalleryPicker from "@/components/albums/gallery-picker";
 import { Tag } from "../tags/columns";
 import { MultiSelect } from "@/components/common/multiselect";
 import { Album } from "./columns";
@@ -28,7 +27,6 @@ interface AlbumForm {
   title: string;
   description: string;
   tags?: string[];
-  images?: number[];
 }
 
 interface PageProps {
@@ -39,7 +37,7 @@ interface PageProps {
 }
 
 export default function CreateImage() {
-  const { album, images, tags } = usePage<PageProps>().props;
+  const { album, tags } = usePage<PageProps>().props;
 
   const tagsList: { value: string; label: string }[] = tags.map((tag) => ({
     value: tag.id.toString(),
@@ -49,14 +47,8 @@ export default function CreateImage() {
   const { data, setData, patch, processing, errors } = useForm<Required<AlbumForm>>({
     title: album.title,
     description: album.description,
-    tags: album.tags.map((tag) => tag.id.toString()),
-    images: album.images.map((image) => image.id),
+    tags: album.tags.map((tag) => tag.id.toString())
   });
-
-  const updateImages = (images: ImageType[]) => {
-    const imagesIds = images.map((img) => img.id);
-    setData('images', imagesIds)
-  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -75,58 +67,43 @@ export default function CreateImage() {
         processing={processing}
         onProcessText="Guardando cambios..."
       >
-        {/* Titulo del album */}
-        <FormField
-          id="title"
-          label="Título"
-          inputType="input"
-          error={errors.title}
-          inputProps={{
-            required: true,
-            autoFocus: true,
-            tabIndex: 1,
-            value: data.title,
-            onChange: (e) => setData("title", e.target.value),
-            placeholder: "Título del álbum"
-          }}
-        />
 
-        {/* Etiquetas */}
-        <FormField
-          id="tags"
-          label="Etiquetas"
-          inputType="custom"
-          error={errors.tags}
-        >
-          <MultiSelect
+        <div className="grid gap-4 grid-cols-2">
+          {/* Titulo del album */}
+          <FormField
+            id="title"
+            label="Título"
+            inputType="input"
+            error={errors.title}
+            inputProps={{
+              required: true,
+              autoFocus: true,
+              tabIndex: 1,
+              value: data.title,
+              onChange: (e) => setData("title", e.target.value),
+              placeholder: "Título del álbum"
+            }}
+          />
+
+          {/* Etiquetas */}
+          <FormField
             id="tags"
-            options={tagsList}
-            onValueChange={(selectedTags) => setData("tags", selectedTags)} // Update tags in useForm
-            defaultValue={data.tags} // Initialize with existing tags
-            placeholder="Selecciona las etiquetas"
-            variant="inverted"
-            tabIndex={2}
-            maxCount={3}
-          />
-        </FormField>
-
-
-        {/* Gallery Picker*/}
-        <FormField
-          id="images"
-          label="Imagenes seleccionadas"
-          inputType="custom"
-          error={errors.images}
-        >
-          <GalleryPicker
-          images={images}
-          selectedImageIds={data.images}
-          imagesHandler={updateImages}
-          maxPreview={5}
-          />
-        </FormField>
-
-
+            label="Etiquetas"
+            inputType="custom"
+            error={errors.tags}
+          >
+            <MultiSelect
+              id="tags"
+              options={tagsList}
+              onValueChange={(selectedTags) => setData("tags", selectedTags)} // Update tags in useForm
+              defaultValue={data.tags} // Initialize with existing tags
+              placeholder="Selecciona las etiquetas"
+              variant="inverted"
+              tabIndex={2}
+              maxCount={3}
+            />
+          </FormField>
+        </div>
         {/* Descripcion */}
         <FormField
           id="description"
