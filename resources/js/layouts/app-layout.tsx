@@ -32,7 +32,7 @@ export default function ({ children, breadcrumbs, ...props }: AppLayoutProps) {
       if (flash.success && flash.success !== prevFlash.success) {
         toast.success(flash.success, {
           closeButton: true,
-          duration: 3000,
+          duration: 6000,
           position: 'top-right',
         });
       }
@@ -40,7 +40,7 @@ export default function ({ children, breadcrumbs, ...props }: AppLayoutProps) {
       if (flash.error && flash.error !== prevFlash.error) {
         toast.error(flash.error, {
           closeButton: true,
-          duration: 3000,
+          duration: 6000,
           position: 'top-right',
         });
       }
