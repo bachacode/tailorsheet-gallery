@@ -7,21 +7,6 @@ import ImageUploader from "@/components/images/image-uploader";
 import { useState } from "react";
 import { Album } from "./columns";
 
-const breadcrumbs: BreadcrumbItem[] = [
-  {
-    title: 'Inicio',
-    href: route('dashboard')
-  },
-  {
-    title: 'Álbumes',
-    href: route('albums.index'),
-  },
-  {
-    title: 'Añadir',
-    href: ''
-  }
-];
-
 interface AlbumForm {
   images?: File[];
 }
@@ -32,7 +17,27 @@ interface PageProps {
 }
 
 export default function CreateImage() {
+
   const { album } = usePage<PageProps>().props;
+
+  const breadcrumbs: BreadcrumbItem[] = [
+    {
+      title: 'Inicio',
+      href: route('dashboard')
+    },
+    {
+      title: 'Álbumes',
+      href: route('albums.index'),
+    },
+    {
+      title: album.title,
+      href: route('albums.show', { id: album.id })
+    },
+    {
+      title: "Añadir imagenes",
+      href: ''
+    }
+  ];
 
   const { data, setData, post, processing, errors, setError } = useForm<Required<AlbumForm>>({
     images: []
@@ -88,7 +93,7 @@ export default function CreateImage() {
       <AppFormLayout
         headerTitle='Añadir imagenes'
         headerDescription={album.title}
-        backRoute="albums.index"
+        //backRoute="albums.index"
         onSubmit={handleSubmit}
         submitText="Añadir imagenes"
         processing={processing}
