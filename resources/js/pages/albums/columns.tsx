@@ -1,5 +1,5 @@
 import { ColumnDef } from "@tanstack/react-table";
-import { Edit, LucideImage, LucidePlus, Trash } from "lucide-react";
+import { Edit, LucideEye, LucideImage, LucidePlus, Trash } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -189,14 +189,25 @@ export const createColumns = (
         return (
           <div className="flex space-x-1">
 
-            {/* Edit Button */}
+            {/* Add Button */}
             <Link aria-label="Añadir" href={route('albums.add', { id: album.id })} className="h-8 w-8 p-0 cursor-pointer">
             <Button
               variant="ghost"
               className="h-8 w-8 p-0 cursor-pointer"
             >
-              <span className="sr-only">Añaddir</span>
+              <span className="sr-only">Añadir</span>
               <LucidePlus className="h-4 w-4 text-muted-foreground" />
+            </Button>
+            </Link>
+
+            {/* View Button */}
+            <Link aria-label="Ver" href={route('albums.show', { id: album.id })} className="h-8 w-8 p-0 cursor-pointer">
+            <Button
+              variant="ghost"
+              className="h-8 w-8 p-0 cursor-pointer"
+            >
+              <span className="sr-only">Ver</span>
+              <LucideEye className="h-4 w-4 text-muted-foreground" />
             </Button>
             </Link>
 

@@ -85,7 +85,11 @@ class AlbumController extends Controller
      */
     public function show(Album $album)
     {
-        //
+        $album->load('images.tags');
+
+        return inertia('albums/show', [
+            'album' => $album
+        ]);
     }
 
     /**

@@ -50,6 +50,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     ->group(function () {
         Route::get('/', 'index')->name('index');
 
+        Route::get('/{album}', 'show')->name('show');
+
         Route::get('/crear', 'create')->name('create');
         Route::post('/', 'store')->name('store');
 
