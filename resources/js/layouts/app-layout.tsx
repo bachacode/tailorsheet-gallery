@@ -26,8 +26,8 @@ export default function ({ children, breadcrumbs, ...props }: AppLayoutProps) {
   const prevFlashRef = useRef<FlashProps>({})
 
   useEffect(() => {
-    const prevFlash = prevFlashRef.current
-    console.log(flash && flash.success !== prevFlash.success);
+    const prevFlash = prevFlashRef.current;
+
     if (flash) {
       if (flash.success && flash.success !== prevFlash.success) {
         toast.success(flash.success, {
