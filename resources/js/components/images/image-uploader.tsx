@@ -12,10 +12,10 @@ export interface ImagePreview {
 }
 
 interface ImageUploaderProps {
-    images: ImagePreview[];
+    images: ImagePreview[] | File[];
     isUploading: boolean;
     onAddImages: (files: File[]) => void;
-    onRemoveImage: (id: string) => void;
+    onRemoveImage: (id: number) => void;
 }
 
 export default function ImageUploader({
@@ -99,41 +99,43 @@ export default function ImageUploader({
                         </div>
 
                         {images.length > 0 && (
-                            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-6">
-                                {images.map((image) => (
+                            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mt-6">
+                                {images.map((image, i) => {
+                                const file = (image instanceof File) ? image : image.file;
+                                return (
                                     <Card
-                                        key={image.id}
-                                        className="overflow-hidden group relative border border-border"
+                                        key={i}
+                                        className="overflow-hidden group relative border border-border py-0 gap-0"
                                     >
-                                        <div className="aspect-square relative bg-muted max-h-52">
+                                        <div className="relative">
                                             <img
-                                                src={image.url || "/placeholder.svg"}
-                                                alt={image.file.name}
-                                                className="object-cover w-full max-h-52"
+                                                src={URL.createObjectURL(file) || "/placeholder.svg"}
+                                                alt={file.name}
+                                                className="object-contain aspect-square w-full h-40 py-0.5"
                                             />
                                             <Button
                                                 size="icon"
                                                 variant="destructive"
                                                 className="absolute cursor-pointer top-2 right-2 h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
-                                                onClick={() => onRemoveImage(image.id)}
+                                                onClick={() => onRemoveImage(i)}
                                             >
                                                 <X className="h-3 w-3" />
                                                 <span className="sr-only">Eliminar</span>
                                             </Button>
                                         </div>
-                                        <CardFooter className="p-2 text-xs flex justify-between items-center bg-card text-card-foreground">
-                                            <span
-                                                className="truncate max-w-[240px]"
-                                                title={image.file.name}
-                                            >
-                                                {image.file.name}
-                                            </span>
-                                            <span className="text-muted-foreground">
-                                                {formatFileSize(image.file.size)}
-                                            </span>
+                                        <CardFooter className="px-2 py-3 border-t text-xs flex justify-between items-center bg-card text-card-foreground">
+                                          <span
+                                            className="truncate max-w-1/2"
+                                            title={file.name}
+                                          >
+                                            {file.name}
+                                          </span>
+                                          <span className="text-muted-foreground">
+                                            {formatFileSize(file.size ?? 0)}
+                                          </span>
                                         </CardFooter>
                                     </Card>
-                                ))}
+                                )})}
                             </div>
                         )}
                     </div>

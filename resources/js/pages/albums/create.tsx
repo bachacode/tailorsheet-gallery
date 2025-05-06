@@ -2,11 +2,12 @@ import AppLayout from "@/layouts/app-layout";
 import { BreadcrumbItem } from "@/types";
 import { Head, useForm, usePage } from "@inertiajs/react";
 import { Image as ImageType } from "../images/columns";
-import GalleryPicker from "@/components/albums/gallery-picker";
 import { Tag } from "../tags/columns";
 import { MultiSelect } from "@/components/common/multiselect";
 import AppFormLayout from "@/layouts/app/app-form-layout";
 import FormField from "@/components/common/form-field";
+import ImageUploader from "@/components/images/image-uploader";
+import { useState } from "react";
 
 const breadcrumbs: BreadcrumbItem[] = [
   {
@@ -27,7 +28,7 @@ interface AlbumForm {
   title: string;
   description: string;
   tags?: string[];
-  images?: number[];
+  images?: File[];
 }
 
 interface PageProps {
@@ -37,28 +38,63 @@ interface PageProps {
 }
 
 export default function CreateImage() {
-  const { images, tags } = usePage<PageProps>().props;
+  const { tags } = usePage<PageProps>().props;
 
   const tagsList: { value: string; label: string }[] = tags.map((tag) => ({
     value: tag.id.toString(),
     label: tag.name,
   }));
 
-  const { data, setData, post, processing, errors } = useForm<Required<AlbumForm>>({
+  const { data, setData, post, processing, errors, setError } = useForm<Required<AlbumForm>>({
     title: "",
     description: "",
     tags: [],
-    images: [],
+    images: []
   });
 
-  const updateImages = (images: ImageType[]) => {
-    const imagesIds = images.map((img) => img.id);
-    setData('images', imagesIds)
+  //const [previews, setPreviews] = useState<ImagePreview[]>([]);
+  const [isUploadingImages, setIsUploadingImages] = useState(false);
+
+  const handleAddImages = (files: File[]) => {// Clear any previous errors
+    setIsUploadingImages(true);
+    // Validate file extensions
+    const validExtensions = ["png", "jpeg", "jpg", "webp", "gif", "bmp", "tiff"];
+    const invalidFiles = files.filter(
+      (file) => !validExtensions.includes(file.name.split(".").pop()?.toLowerCase() || "")
+    );
+
+    if (invalidFiles.length > 0) {
+      setError('images', "Algunos archivos tienen extensiones no permitidas.");
+      setIsUploadingImages(false);
+      return;
+    } else {
+      setError('images', '');
+    }
+
+    // Simulate network delay
+    setTimeout(() => {
+      setData('images', files);
+      setIsUploadingImages(false);
+    }, 600);
+
+  };
+
+  const handleRemoveImage = (id: number) => {
+    setData('images', data.images.filter((_, i) => i !== id))
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    post(route("albums.store"))
+
+    if (data.images.length === 0) {
+      setError('images',"Debes subir al menos un archivo.");
+      return;
+    }
+    setIsUploadingImages(true);
+
+    post(route("albums.store"), {
+      forceFormData: true
+    })
   };
 
   return (
@@ -108,21 +144,20 @@ export default function CreateImage() {
         </FormField>
 
 
-        {/* Gallery Picker*/}
+        {/* Multiple File Upload Field */}
         <FormField
-          id="images"
-          label="Imagenes seleccionadas"
-          inputType="custom"
-          error={errors.images}
+        id="images"
+        label="Imagenes"
+        inputType="custom"
+        error={errors.images}
         >
-          <GalleryPicker
-          images={images}
-          selectedImageIds={data.images}
-          imagesHandler={updateImages}
-          maxPreview={5}
-          />
+        <ImageUploader
+          images={data.images}
+          isUploading={isUploadingImages}
+          onAddImages={handleAddImages}
+          onRemoveImage={handleRemoveImage}
+        />
         </FormField>
-
 
         {/* Descripcion */}
         <FormField

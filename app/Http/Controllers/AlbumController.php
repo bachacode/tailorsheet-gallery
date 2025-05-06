@@ -47,11 +47,26 @@ class AlbumController extends Controller
         $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'nullable|string|max:255',
-            'images' => 'nullable|array',
-            'images.*' => 'integer|exists:images,id',
+            'images.*' => 'required|image|max:51200',
             'tags' => 'nullable|array',
             'tags.*' => 'integer|exists:tags,id',
         ]);
+
+        $images = [];
+        foreach ($request->file('images') as $file) {
+            $path = $file->store('images', 'public'); // Store the file in the 'images' folder
+
+            $filename = basename($path); // Extract only the filename
+            $size = $file->getSize(); // Get the file size in bytes
+
+            $image = $request->user()->images()->create([
+                'title' => pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME), // Use file name as title
+                'filename' => $filename, // Save only the filename
+                'size' => $size, // Save the file size
+            ]);
+
+            $images[] = $image->id;
+        }
 
         $album = $request->user()->albums()->create([
             'title' => $request->title,
@@ -59,7 +74,7 @@ class AlbumController extends Controller
         ]);
 
         $album->tags()->sync($request->tags);
-        $album->images()->sync($request->images);
+        $album->images()->sync($images);
 
         return redirect()->route('albums.index')->with('success', '¡Álbum creado correctamente!');
     }
