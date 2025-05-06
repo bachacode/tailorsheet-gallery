@@ -14,8 +14,20 @@ Route::middleware(['auth', 'verified'])->group(function () {
     })->name('dashboard');
 
     // Imagenes
-    Route::resource('images', ImageController::class)
-    ->except(['show']);
+    Route::controller(ImageController::class)
+    ->prefix('imagenes')
+    ->name('images.')
+    ->group(function () {
+        Route::get('/', 'index')->name('index');
+
+        Route::get('/crear', 'create')->name('create');
+        Route::post('/', 'store')->name('store');
+
+        Route::get('/{image}/editar', 'edit')->name('edit');
+        Route::patch('/{image}', 'update')->name('update');
+
+        Route::delete('/{image}', 'destroy')->name('destroy');
+    });
 
     Route::resource('tags', TagController::class)->except(['create', 'show', 'edit']);
 
