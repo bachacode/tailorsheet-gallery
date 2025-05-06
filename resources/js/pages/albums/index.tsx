@@ -48,7 +48,7 @@ export default function Index() {
       <Head title="Álbumes" />
       <AppFeatureLayout
         title='Mis álbumes'
-        action={{ route: 'albums.create', text: 'Crear nuevo álbum' }}
+        action={{ route: route('albums.create'), text: 'Crear nuevo álbum' }}
       >
         <DataTableToggle view={view} setView={setView} />
         {view === 'grid' ? <DataGrid columns={columns} contentColumns={['image', 'title']} footerColumns={['images_count', 'actions']} data={albums} filterFields={['title', 'description', 'tags']} /> : <DataTable columns={columns} data={albums} filterFields={['title', 'description', 'tags']} visibleColumns={['select', 'title', 'tags', 'images_count_table', 'description', 'created_at', 'actions']} />}

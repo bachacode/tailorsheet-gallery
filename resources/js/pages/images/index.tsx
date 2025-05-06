@@ -63,7 +63,7 @@ export default function Index() {
       <Head title="Imagenes" />
       <AppFeatureLayout
         title='Mis imagenes'
-        action={{ route: 'images.create', text: 'Añadir nueva imagen' }}
+        action={{ route: route('images.create'), text: 'Añadir nueva imagen' }}
       >
         <DataTableToggle view={view} setView={setView}/>
         {view === 'grid' ? <DataGrid columns={columns} contentColumns={['image']} footerColumns={['size', 'actions']} data={images} filterFields={['title', 'description', 'tags']} /> : <DataTable columns={columns} data={images} filterFields={['title', 'description', 'tags']} visibleColumns={['select', 'title', 'filename', 'tags', 'description', 'size', 'created_at', 'actions']} />}
