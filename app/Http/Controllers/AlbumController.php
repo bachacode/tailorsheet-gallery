@@ -72,7 +72,7 @@ class AlbumController extends Controller
             'title' => $request->title,
             'description' => $request->description
         ]);
-
+        dd($album);
         $album->tags()->sync($request->tags);
         $album->images()->sync($images);
 
@@ -130,6 +130,43 @@ class AlbumController extends Controller
 
         return redirect()->route('albums.index')->with('success', '¡Álbum actualizado correctamente!');
 
+    }
+
+    public function add(string $id) {
+        /** @var \App\Models\User */
+        $user = Auth::user();
+        $album = $user->albums()->with(['tags', 'images'])->findOrFail($id);
+
+        return inertia('albums/add', [
+            'album' => $album
+        ]);
+    }
+
+    public function upload(Request $request, Album $album)
+    {
+        $request->validate([
+            'images.*' => 'required|image|max:51200',
+        ]);
+
+        $images = [];
+        foreach ($request->file('images') as $file) {
+            $path = $file->store('images', 'public'); // Store the file in the 'images' folder
+
+            $filename = basename($path); // Extract only the filename
+            $size = $file->getSize(); // Get the file size in bytes
+
+            $image = $request->user()->images()->create([
+                'title' => pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME), // Use file name as title
+                'filename' => $filename, // Save only the filename
+                'size' => $size, // Save the file size
+            ]);
+
+            $images[] = $image->id;
+        }
+
+        $album->images()->sync($images);
+
+        return redirect()->route('albums.index')->with('success', '¡Se han añadido nuevas imagenes al álbum correctamente!');
     }
 
     /**

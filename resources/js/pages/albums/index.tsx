@@ -31,7 +31,7 @@ export default function Index() {
   const { albums } = usePage<PageProps>().props
 
   const handleDelete = (id: number) => {
-    router.delete(`/albums/${id}`, {
+    router.delete(route('albums.destroy', { id: id }), {
       onSuccess: () => {
         toast.success('¡Álbum eliminado correctamente!', {
           closeButton: true,
