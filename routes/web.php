@@ -29,7 +29,19 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::delete('/{image}', 'destroy')->name('destroy');
     });
 
-    Route::resource('tags', TagController::class)->except(['create', 'show', 'edit']);
+    // Etiquetas
+    Route::controller(TagController::class)
+    ->prefix('etiquetas')
+    ->name('tags.')
+    ->group(function () {
+        Route::get('/', 'index')->name('index');
+
+        Route::post('/', 'store')->name('store');
+
+        Route::patch('/{tag}', 'update')->name('update');
+
+        Route::delete('/{tag}', 'destroy')->name('destroy');
+    });
 
     // Álbumes
     Route::controller(AlbumController::class)

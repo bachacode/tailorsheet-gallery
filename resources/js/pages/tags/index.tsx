@@ -39,7 +39,7 @@ export default function Index() {
   });
 
   const handleDelete = (id: number) => {
-    router.delete(`/tags/${id}`, {
+    router.delete(route('tags.destroy', { id: id }), {
       onSuccess: () => {
         toast.success('¡Etiqueta eliminada correctamente!', {
           closeButton: true,

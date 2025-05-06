@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Tag;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Session;
 
 class TagController extends Controller
@@ -12,24 +13,13 @@ class TagController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-       /** @var \App\Models\User */
-       $user = Auth::user();
-
-       $tags = $user->tags()->latest()->get();
+        $tags = $request->user()->tags()->latest()->get();
 
         return inertia('tags/index', [
             'tags' => $tags,
         ]);
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
     }
 
     /**
@@ -49,26 +39,16 @@ class TagController extends Controller
     }
 
     /**
-     * Display the specified resource.
-     */
-    public function show(Tag $tag)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Tag $tag)
-    {
-        //
-    }
-
-    /**
      * Update the specified resource in storage.
      */
     public function update(Request $request, Tag $tag)
     {
+        $response = Gate::inspect('update', $tag);
+
+        if(!$response->allowed()) {
+            return to_route('tags.index')->with('error', $response->message());
+        }
+
         $request->validate([
             'name' => 'required|unique:tags|string|max:255',
         ]);
@@ -83,13 +63,14 @@ class TagController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Tag $tag)
     {
-        /** @var \App\Models\User */
-        $user = Auth::user();
-        $tag = $user->tags()->findOrFail($id);
+        $response = Gate::inspect('forceDelete', $tag);
 
-        // Delete the tag record from the database
+        if(!$response->allowed()) {
+            return to_route('tags.index')->with('error', $response->message());
+        }
+
         $tag->delete();
     }
 }
