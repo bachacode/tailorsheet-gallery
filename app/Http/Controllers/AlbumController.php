@@ -5,18 +5,22 @@ namespace App\Http\Controllers;
 use App\Models\Album;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 
 class AlbumController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        /** @var \App\Models\User */
-        $user = Auth::user();
-
-        $albums = $user->albums()->with(['tags', 'images'])->withCount('images')->latest()->get();
+        $albums = $request
+            ->user()
+            ->albums()
+            ->with(['tags', 'images'])
+            ->withCount('images')
+            ->latest()
+            ->get();
 
         return inertia('albums/index', [
             'albums' => $albums,
@@ -26,13 +30,11 @@ class AlbumController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create(Request $request)
     {
-        /** @var \App\Models\User */
-        $user = Auth::user();
+        $images = $request->user()->images()->with('tags')->latest()->get();
+        $tags = $request->user()->tags()->latest()->get();
 
-        $images = $user->images()->with('tags')->latest()->get();
-        $tags = $user->tags()->latest()->get();
         return inertia('albums/create', [
             'images' => $images,
             'tags' => $tags
@@ -72,7 +74,6 @@ class AlbumController extends Controller
             'title' => $request->title,
             'description' => $request->description
         ]);
-        dd($album);
         $album->tags()->sync($request->tags);
         $album->images()->sync($images);
 
@@ -82,7 +83,7 @@ class AlbumController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(Album $album)
     {
         //
     }
@@ -90,12 +91,17 @@ class AlbumController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(Request $request, Album $album)
     {
-        /** @var \App\Models\User */
-        $user = Auth::user();
-        $album = $user->albums()->with(['tags', 'images'])->findOrFail($id);
-        $tags = $user->tags()->latest()->get();
+        $response = Gate::inspect('update', $album);
+
+        if(!$response->allowed()) {
+            return to_route('albums.index')->with('error', $response->message());
+        }
+
+        $album->load('tags');
+
+        $tags = $request->user()->tags()->latest()->get();
 
         return inertia('albums/edit', [
             'album' => $album,
@@ -108,12 +114,16 @@ class AlbumController extends Controller
      */
     public function update(Request $request, Album $album)
     {
+        $response = Gate::inspect('update', $album);
+
+        if(!$response->allowed()) {
+            return to_route('albums.index')->with('error', $response->message());
+        }
+
         $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'nullable|string|max:255',
             'cover_image' => 'nullable|string|max:255',
-            'images' => 'nullable|array',
-            'images.*' => 'integer|exists:images,id',
             'tags' => 'nullable|array',
             'tags.*' => 'integer|exists:tags,id',
         ]);
@@ -125,16 +135,16 @@ class AlbumController extends Controller
         ]);
 
         $album->tags()->sync($request->tags);
-        $album->images()->sync($request->images);
 
         return redirect()->route('albums.index')->with('success', '¡Álbum actualizado correctamente!');
-
     }
 
-    public function add(string $id) {
-        /** @var \App\Models\User */
-        $user = Auth::user();
-        $album = $user->albums()->with(['tags', 'images'])->findOrFail($id);
+    public function add(Album $album) {
+        $response = Gate::inspect('update', $album);
+
+        if(!$response->allowed()) {
+            return to_route('albums.index')->with('error', $response->message());
+        }
 
         return inertia('albums/add', [
             'album' => $album
@@ -143,6 +153,12 @@ class AlbumController extends Controller
 
     public function upload(Request $request, Album $album)
     {
+        $response = Gate::inspect('update', $album);
+
+        if(!$response->allowed()) {
+            return to_route('albums.index')->with('error', $response->message());
+        }
+
         $request->validate([
             'images.*' => 'required|image|max:51200',
         ]);
@@ -163,7 +179,7 @@ class AlbumController extends Controller
             $images[] = $image->id;
         }
 
-        $album->images()->sync($images);
+        $album->images()->syncWithoutDetaching($images);
 
         return redirect()->route('albums.index')->with('success', '¡Se han añadido nuevas imagenes al álbum correctamente!');
     }
@@ -171,13 +187,14 @@ class AlbumController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Album $album)
     {
-        /** @var \App\Models\User */
-        $user = Auth::user();
-        $image = $user->albums()->findOrFail($id);
+        $response = Gate::inspect('forceDelete', $album);
 
-        // Delete the image record from the database
-        $image->delete();
+        if(!$response->allowed()) {
+            return to_route('albums.index')->with('error', $response->message());
+        }
+
+        $album->delete();
     }
 }
