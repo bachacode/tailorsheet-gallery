@@ -8,7 +8,7 @@ import { AxiosProgressEvent } from 'axios';
 interface AppFormLayout {
   headerTitle: string;
   headerDescription?: string;
-  backRoute: string;
+  backRoute?: string;
   children: React.ReactNode;
   onSubmit: (e: React.FormEvent) => void;
   submitText: string;
@@ -36,11 +36,20 @@ export default function AppFormLayout({
         <HeadingBig title={headerTitle} description={headerDescription} />
 
         {/* Back link */}
+        {backRoute ? (
         <Link href={route(backRoute)} className="bg-blue-500 hover:bg-blue-400 transition-colors text-white px-4 py-2 rounded cursor-pointer">
           <span className="flex items-center">
             <LucideMoveLeft className="h-4 w-4 mr-1.5" />Volver
           </span>
         </Link>
+        ) : (
+        <span onClick={() => window.history.back()} className="bg-blue-500 hover:bg-blue-400 transition-colors text-white px-4 py-2 rounded cursor-pointer">
+          <span className="flex items-center">
+            <LucideMoveLeft className="h-4 w-4 mr-1.5" />Volver
+          </span>
+        </span>
+        )}
+
 
       </header>
       <div>
