@@ -39,6 +39,8 @@ export default function CreateImage() {
       setError("Algunos archivos tienen extensiones no permitidas.");
       setIsUploading(false);
       return;
+    } else {
+      setError('');
     }
 
     // Create image previews
@@ -55,11 +57,11 @@ export default function CreateImage() {
     }, 1000);
   };
 
-  const handleRemoveImage = (id: string) => {
+  const handleRemoveImage = (id: number) => {
     setImages((prev) => {
-      const filtered = prev.filter((image) => image.id !== id);
+      const filtered = prev.filter((image, index) => index !== id);
       // Revoke object URL to prevent memory leaks
-      const imageToRemove = prev.find((image) => image.id === id);
+      const imageToRemove = prev.find((image, index) => index === id);
       if (imageToRemove) {
         URL.revokeObjectURL(imageToRemove.url);
       }
