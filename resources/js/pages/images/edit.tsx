@@ -130,7 +130,6 @@ export default function EditImage() {
           inputType="textarea"
           error={errors.description}
           inputProps={{
-            required: true,
             autoFocus: true,
             tabIndex: 4,
             value: data.description,
