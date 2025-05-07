@@ -1,5 +1,5 @@
 import { ColumnDef } from "@tanstack/react-table";
-import { Check, Clipboard, Edit, Trash } from "lucide-react";
+import { Check, Clipboard, Edit, LucideDownload, Trash } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -214,6 +214,18 @@ export const createColumns = (
               ) : (
                 <Clipboard className="h-4 w-4 text-muted-foreground" />
               )}
+            </Button>
+
+            {/* Download Button */}
+            <Button
+              variant="ghost"
+              className="flex items-center px-1 h-8 w-8 p-0 cursor-pointer"
+              aria-label="Descargar archivo"
+              asChild
+            >
+              <a href={`/storage/images/${image.filename}`} download={image.filename}>
+                <LucideDownload className="h-4 w-4 text-muted-foreground" />
+              </a>
             </Button>
 
             {/* Edit Button */}
