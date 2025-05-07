@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AlbumController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ImageController;
 use App\Http\Controllers\TagController;
 use Illuminate\Support\Facades\Route;
@@ -9,9 +10,7 @@ use Inertia\Inertia;
 Route::middleware(['auth', 'verified'])->group(function () {
 
     // Dashboard
-    Route::get('dashboard', function () {
-        return Inertia::render('dashboard');
-    })->name('dashboard');
+    Route::get('dashboard', DashboardController::class)->name('dashboard');
 
     // Imagenes
     Route::controller(ImageController::class)
