@@ -4,7 +4,7 @@ import { type BreadcrumbItem } from '@/types';
 import { Head, router, useForm, usePage, } from '@inertiajs/react';
 import { Album } from './columns';
 import { createColumns } from '../images/columns';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { toast } from 'sonner';
 
 import DataTableToggle from '@/components/common/data-table-toggle';
@@ -27,6 +27,14 @@ interface AlbumForm {
 
 export default function Show() {
   const { album } = usePage<PageProps>().props;
+
+  const orderedImages = useMemo(() => {
+        // Create a *new* array to avoid mutating the original 'items' prop.
+        const sorted = [...album.images].sort(
+          (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+        );
+        return sorted;
+  }, [album.images])
 
   const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -185,7 +193,7 @@ export default function Show() {
         </Accordion>
 
         <DataTableToggle view={view} setView={setView} />
-        {view === 'grid' ? <DataGrid columns={columns} contentColumns={['image']} footerColumns={['size', 'actions']} data={album.images} filterFields={['title', 'description', 'tags']} /> : <DataTable columns={columns} data={album.images} filterFields={['title', 'description', 'tags']} visibleColumns={['select', 'title', 'filename', 'tags', 'description', 'size', 'created_at', 'actions']} />}
+        {view === 'grid' ? <DataGrid columns={columns} contentColumns={['image']} footerColumns={['size', 'actions']} data={orderedImages} filterFields={['title', 'description', 'tags']} /> : <DataTable columns={columns} data={orderedImages} filterFields={['title', 'description', 'tags']} visibleColumns={['select', 'title', 'filename', 'tags', 'description', 'size', 'created_at', 'actions']} />}
       </AppFeatureLayout>
     </AppLayout>
   );
