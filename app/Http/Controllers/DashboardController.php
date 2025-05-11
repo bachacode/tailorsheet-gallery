@@ -12,9 +12,10 @@ class DashboardController extends Controller
     public function __invoke(Request $request)
     {
         $user = $request->user()->withCount(['images', 'albums'])->withSum('images', 'size')->first();
-
+        $albums = $user->albums()->with(['images', 'tags'])->withCount('images')->get();
         return inertia('dashboard', [
-            'user' => $user
+            'user' => $user,
+            'albums' => $albums
         ]);
     }
 }

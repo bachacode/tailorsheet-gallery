@@ -1,6 +1,6 @@
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
-import { Head, usePage } from '@inertiajs/react';
+import { Head, router, usePage } from '@inertiajs/react';
 
 const breadcrumbs: BreadcrumbItem[] = [
   {
@@ -13,6 +13,13 @@ import type React from "react"
 import { ArrowDownIcon, ArrowUpIcon, LucideHardDrive, LucideImage, LucideImages } from "lucide-react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { cn, formatFileSize } from "@/lib/utils"
+import AppFeatureLayout from '@/layouts/app/app-feature-layout';
+import DataTableToggle from '@/components/common/data-table-toggle';
+import { DataGrid } from '@/components/common/data-grid';
+import { DataTable } from '@/components/common/data-table';
+import { useState } from 'react';
+import { toast } from 'sonner';
+import { Album, createColumns } from './albums/columns';
 
 interface DashboardCardProps {
   title: string
@@ -61,17 +68,31 @@ interface User {
 
 interface PageProps {
   user: User;
+  albums: Album[];
   [x: string]: unknown;
 }
 
 export default function Dashboard() {
-  const { user } = usePage<PageProps>().props
-
+  const { user, albums } = usePage<PageProps>().props
+  const [view, setView] = useState<'table' | 'grid'>('grid');
+  console.log(albums);
+  const handleDelete = (id: number) => {
+    router.delete(route('albums.destroy', { id: id }), {
+      onSuccess: () => {
+        toast.success('¡Álbum eliminado correctamente!', {
+          closeButton: true,
+          duration: 3000,
+          position: 'top-right',
+        });
+      }
+    });
+  }
+  const columns = createColumns(handleDelete);
   return (
     <AppLayout breadcrumbs={breadcrumbs}>
       <Head title="Dashboard" />
       <div className="flex h-full flex-1 flex-col gap-4 rounded-xl p-4">
-        <div className="grid gap-4 md:grid-cols-3">
+        <div className="grid gap-4 md:grid-cols-3 px-12">
           <DashboardCard
             title='Imagenes totales'
             value={`${user.images_count} imagenes subidas`}
@@ -90,8 +111,15 @@ export default function Dashboard() {
             icon={<LucideHardDrive className='h-6 w-6' />}
             className='gap-2.5 py-6 h-min justify-center'
           />
-
         </div>
+
+        <AppFeatureLayout
+          title='Mis álbumes'
+        >
+          <DataTableToggle view={view} setView={setView} />
+          {view === 'grid' ? <DataGrid columns={columns} contentColumns={['image', 'title']} footerColumns={['images_count', 'actions']} data={albums} filterFields={['title', 'description', 'tags']} /> : <DataTable columns={columns} data={albums} filterFields={['title', 'description', 'tags']} visibleColumns={['select', 'title', 'tags', 'images_count_table', 'description', 'created_at', 'actions']} />}
+        </AppFeatureLayout>
+
       </div>
     </AppLayout>
   );

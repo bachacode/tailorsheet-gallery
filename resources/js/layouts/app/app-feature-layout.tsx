@@ -6,7 +6,7 @@ interface AppFeatureLayoutProps {
   title: string;
   description?: string;
   children: React.ReactNode;
-  action: {
+  action?: {
     route: string;
     text: string;
   }
@@ -17,9 +17,12 @@ export default function AppFeatureLayout({ title, description = '', children, ac
     <div className='py-8 px-12 space-y-6'>
       <div className='flex justify-between items-center'>
         <HeadingBig title={title} description={description} />
-        <Link href={action.route} className="bg-blue-500 hover:bg-blue-400 transition-colors text-white px-4 py-2 rounded">
-          {action.text}
-        </Link>
+        {action && (
+          <Link href={action.route} className="bg-blue-500 hover:bg-blue-400 transition-colors text-white px-4 py-2 rounded">
+            {action.text}
+          </Link>
+        )}
+
       </div>
       <div>
         {children}
