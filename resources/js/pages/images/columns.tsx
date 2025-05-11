@@ -55,7 +55,7 @@ export const createColumns = (
       cell: ({ row }) => {
         const image = row.original;
         return (
-          <div className="flex items-center space-x-2">
+          <Link href={route('images.edit', image.id)}>
             <img
               src={`/storage/images/${image.filename}`}
               alt={image.title}
@@ -65,7 +65,7 @@ export const createColumns = (
                 e.currentTarget.src = "/landscape-placeholder.svg"; // Your fallback image path
               }}
             />
-          </div>
+          </Link>
         );
       }
     },
