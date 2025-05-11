@@ -20,7 +20,7 @@ interface ConfirmDialogProps {
 export function ConfirmDialog({ dialogDescription, children, handleConfirm }: ConfirmDialogProps) {
   return (
     <AlertDialog>
-      <AlertDialogTrigger>{children}</AlertDialogTrigger>
+      <AlertDialogTrigger asChild>{children}</AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>¿Estás seguro?</AlertDialogTitle>
