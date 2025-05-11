@@ -59,8 +59,8 @@ export default function CreateImage() {
     <AppLayout breadcrumbs={breadcrumbs}>
       <Head title="Editar álbum" />
       <AppFormLayout
-        headerTitle='Editar álbum'
-        headerDescription={album.title}
+        headerTitle={album.title}
+        headerDescription="Editando álbum"
         backRoute="albums.index"
         onSubmit={handleSubmit}
         submitText="Guardar cambios"

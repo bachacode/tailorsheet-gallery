@@ -70,8 +70,8 @@ export default function Show() {
     <AppLayout breadcrumbs={breadcrumbs}>
       <Head title={album.title} />
        <AppFeatureLayout
-              title='Viendo álbum'
-              description={album.title}
+              title={album.title}
+              description="Viendo álbum"
               action={{ route: route('albums.add', { id: album.id }), text: 'Añadir imagenes' }}
             >
             <DataTableToggle view={view} setView={setView} />

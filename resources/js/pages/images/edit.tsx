@@ -60,8 +60,8 @@ export default function EditImage() {
     <AppLayout breadcrumbs={breadcrumbs}>
       <Head title="Editar imagen" />
       <AppFormLayout
-        headerTitle="Editar imagen"
-        headerDescription={image.title}
+        headerTitle={image.title}
+        headerDescription="Editando imagen"
         backRoute="images.index"
         onSubmit={handleSubmit}
         submitText="Guardar cambios"
