@@ -1,5 +1,5 @@
 import { ColumnDef } from "@tanstack/react-table";
-import { Check, Clipboard, Edit, LucideDownload, Trash } from "lucide-react";
+import { Check, LucideCopy, Edit, LucideDownload, Trash } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -149,7 +149,7 @@ export const createColumns = (
               </span>
             ) : (
               <span>
-                <Clipboard className="h-4 w-4 text-muted-foreground" />
+                <LucideCopy className="h-4 w-4 text-muted-foreground" />
               </span>
             )}
           </Button>
@@ -212,7 +212,7 @@ export const createColumns = (
               {isCopied ? (
                 <Check className="h-4 w-4 text-green-500" />
               ) : (
-                <Clipboard className="h-4 w-4 text-muted-foreground" />
+                <LucideCopy className="h-4 w-4 text-muted-foreground" />
               )}
             </Button>
 
