@@ -14,7 +14,7 @@ import FormField from '@/components/common/form-field';
 import ImageUploader from '@/components/images/image-uploader';
 import { Button } from '@/components/ui/button';
 import { LucideLoaderCircle } from 'lucide-react';
-import { Accordion,AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 
 interface PageProps {
   album: Album;
@@ -75,7 +75,7 @@ export default function Show() {
   const columns = createColumns(copiedState, handleCopy, handleDelete);
 
 
-  const { data, setData, post, processing, errors, setError } = useForm<Required<AlbumForm>>({
+  const { data, setData, post, processing, errors, setError, reset } = useForm<Required<AlbumForm>>({
     images: []
   });
 
@@ -120,7 +120,26 @@ export default function Show() {
     }
     setIsUploadingImages(true);
 
-    post(route("albums.upload", { id: album.id }))
+    await post(route("albums.upload", { id: album.id }), {
+      onFinish: () => {
+        setIsUploadingImages(false)
+        reset('images')
+      },
+      onSuccess: () => {
+        toast.success('¡Se han añadido nuevas imagenes al álbum correctamente!', {
+          closeButton: true,
+          duration: 3000,
+          position: 'top-right',
+        })
+      },
+      onError: () => {
+        toast.error('¡Ha ocurrido un error al intentar subir imagenes al álbum!', {
+          closeButton: true,
+          duration: 3000,
+          position: 'top-right',
+        })
+      }
+    })
   };
 
 
@@ -133,7 +152,7 @@ export default function Show() {
       >
         <Accordion type='single' collapsible className='w-full pb-6 justify-center'>
           <AccordionItem value='item-1' className='w-full text-center'>
-            <AccordionTrigger className='border-b border-gray-600 rounded-none cursor-pointer py-3'>
+            <AccordionTrigger className='px-2 border-b border-gray-600 rounded-none cursor-pointer py-3'>
               Añadir nuevas imagenes
             </AccordionTrigger>
             <AccordionContent>

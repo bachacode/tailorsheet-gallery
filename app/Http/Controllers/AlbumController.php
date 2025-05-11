@@ -185,7 +185,7 @@ class AlbumController extends Controller
 
         $album->images()->syncWithoutDetaching($images);
 
-        return redirect()->route('albums.index')->with('success', '¡Se han añadido nuevas imagenes al álbum correctamente!');
+        return redirect()->route('albums.show', [ 'album' => $album ]);
     }
 
     /**
