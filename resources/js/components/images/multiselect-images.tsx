@@ -28,7 +28,6 @@ import {
   CommandList,
   CommandSeparator,
 } from "@/components/ui/command";
-import { ConfirmDialog } from "../common/confirm-dialog";
 import { toast } from "sonner";
 
 /**
@@ -300,33 +299,31 @@ export const MultiSelectImages = React.forwardRef<
               <CommandEmpty><div className="px-4 flex flex-col items-center space-y-1.5">
                 <span>Esta etiqueta no existe,</span>
                 <span>¿Deseas añadirla?</span>
-                <ConfirmDialog
-                  dialogDescription={`Estás a punto de crear una nueva etiqueta de nombre ${tagName}. ¿Confirmas esta acción?`}
-                  handleConfirm={async () => {
-                    try {
-                      setIsLoading(true);
-                      const createdTag = await handleCommandSubmit(tagName);
-                      setIsLoading(false);
-                      setSelectedValues((prev) => {
-                        if (prev.includes(createdTag)) return prev;
-                        const updated = [...prev, createdTag];
-                        onValueChange(updated);
-                        return updated;
-                      });
 
-                      setTagName("");
-                      setIsPopoverOpen(false);
-                    } catch {
-                      toast.error("Error al crear etiqueta.");
+                {isLoading ? (
+                  <LucideLoaderCircle className="h-4 w-4 animate-spin" />
+                ) : (
+                  <LucideCirclePlus onClick={
+                    async () => {
+                      try {
+                        setIsLoading(true);
+                        const createdTag = await handleCommandSubmit(tagName);
+                        setIsLoading(false);
+                        setSelectedValues((prev) => {
+                          if (prev.includes(createdTag)) return prev;
+                          const updated = [...prev, createdTag];
+                          onValueChange(updated);
+                          return updated;
+                        });
+
+                        setTagName("");
+                        setIsPopoverOpen(false);
+                      } catch {
+                        toast.error("Error al crear etiqueta.");
+                      }
                     }
-                  }}
-                >
-                  {isLoading ? (
-                    <LucideLoaderCircle className="h-4 w-4 animate-spin" />
-                  ) : (
-                    <LucideCirclePlus className="transition-colors hover:text-gray-400 cursor-pointer"/>
-                  )}
-                </ConfirmDialog>
+                  } className="transition-colors hover:text-gray-400 cursor-pointer" />
+                )}
               </div></CommandEmpty>
               <CommandGroup>
                 <CommandItem
