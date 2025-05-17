@@ -63,6 +63,8 @@ class ImageController extends Controller
             return to_route('images.index')->with('error', $response->message());
         }
 
+        $image->load('tags');
+
         return inertia('images/edit', [
             'image' => $image,
             'tags' => $request->user()->tags()->get()
