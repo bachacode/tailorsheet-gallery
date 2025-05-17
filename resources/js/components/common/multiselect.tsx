@@ -288,7 +288,7 @@ export const MultiSelect = React.forwardRef<
               onKeyDown={handleInputKeyDown}
             />
             <CommandList>
-              <CommandEmpty>No results found.</CommandEmpty>
+              <CommandEmpty>No se han encontrado resultados.</CommandEmpty>
               <CommandGroup>
                 <CommandItem
                   key="all"
