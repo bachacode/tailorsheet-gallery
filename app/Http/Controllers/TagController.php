@@ -31,9 +31,13 @@ class TagController extends Controller
             'name' => 'required|unique:tags|string|max:255',
         ]);
 
-        $request->user()->tags()->create([
+        $tag = $request->user()->tags()->create([
             'name' => $request->name,
         ]);
+
+        if($request->has('no_redirect')) {
+            return response()->json(['tag' => $tag]);
+        }
 
         return to_route('tags.index')->with('success', '¡Etiqueta creada correctamente!');
     }
