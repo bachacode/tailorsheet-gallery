@@ -1,12 +1,14 @@
-import { FormEventHandler } from "react";
-import { Head, useForm, usePage } from "@inertiajs/react";
+import { FormEventHandler, useState } from "react";
+import { Head, router, useForm, usePage } from "@inertiajs/react";
 import { Image } from "./columns";
 import AppLayout from "@/layouts/app-layout";
 import { BreadcrumbItem } from "@/types";
 import { Tag } from "../tags/columns";
-import { MultiSelect } from "@/components/common/multiselect";
 import AppFormLayout from "@/layouts/app/app-form-layout";
 import FormField from "@/components/common/form-field";
+import { MultiSelectImages } from "@/components/images/multiselect-images";
+import { toast } from "sonner";
+import axios from "axios";
 
 const breadcrumbs: BreadcrumbItem[] = [
   {
@@ -38,22 +40,45 @@ interface PageProps {
 
 export default function EditImage() {
   const { image, tags } = usePage<PageProps>().props
-
   const tagsList: { value: string; label: string }[] = tags.map((tag) => ({
     value: tag.id.toString(),
     label: tag.name,
   }));
+  const [isLoading, setIsLoading] = useState(false);
 
   const { data, setData, patch, processing, errors } = useForm<Required<ImageForm>>({
     title: image.title,
     description: image.description,
     filename: image.filename,
-    tags: (image.tags) ? image.tags.map((tag) => tag.id.toString()) : [], // Initialize with existing tags
+    tags: image.tags.map((tag) => tag.id.toString()), // Initialize with existing tags
   });
 
   const handleSubmit: FormEventHandler = (e) => {
     e.preventDefault();
     patch(route("images.update", { id: image.id }));
+  };
+
+  const handleNewTagSubmit = async (name: string) => {
+    try {
+      setIsLoading(true)
+      const response = await axios.post(route('tags.store', { no_redirect: true }), { name });
+      const newTag = response.data.tag as Tag
+      router.reload({
+        only: ["tags"],
+        onFinish: () => {
+          toast.success("¡Etiqueta creada correctamente!", {
+            closeButton: true,
+            duration: 3000,
+            position: 'top-right',
+          });
+          setIsLoading(false)
+        }
+      })
+      return newTag.id.toString();
+    } catch (error) {
+      toast.error("Hubo un error al crear la etiqueta.");
+      throw error;
+    }
   };
 
   return (
@@ -65,7 +90,7 @@ export default function EditImage() {
         backRoute="images.index"
         onSubmit={handleSubmit}
         submitText="Guardar cambios"
-        processing={processing}
+        processing={processing || isLoading}
         onProcessText="Guardando cambios..."
       >
         {/* Titulo y nombre del archivo */}
@@ -105,20 +130,23 @@ export default function EditImage() {
 
         {/* Lista de etiquetas */}
         <FormField
-          id="tags"
+          id="image_tags"
           label="Etiquetas"
           inputType="custom"
           error={errors.tags}
         >
-          <MultiSelect
+          <MultiSelectImages
             id="tags"
             options={tagsList}
-            onValueChange={(selectedTags) => setData("tags", selectedTags)} // Update tags in useForm
+            onValueChange={(selectedTags) => {
+              setData("tags", selectedTags)
+            }} // Update tags in useForm
             defaultValue={data.tags} // Initialize with existing tags
             placeholder="Selecciona las etiquetas"
             variant="inverted"
             tabIndex={3}
             maxCount={3}
+            handleCommandSubmit={handleNewTagSubmit}
           />
         </FormField>
 
