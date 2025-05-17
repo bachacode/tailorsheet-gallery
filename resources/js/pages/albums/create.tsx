@@ -1,15 +1,11 @@
 import AppLayout from "@/layouts/app-layout";
 import { BreadcrumbItem } from "@/types";
-import { Head, router, useForm, usePage } from "@inertiajs/react";
-import { Image as ImageType } from "../images/columns";
-import { Tag } from "../tags/columns";
+import { Head, useForm } from "@inertiajs/react";
+
 import AppFormLayout from "@/layouts/app/app-form-layout";
 import FormField from "@/components/common/form-field";
 import ImageUploader from "@/components/images/image-uploader";
 import { useState } from "react";
-import { MultiSelectImages } from "@/components/images/multiselect-images";
-import axios from "axios";
-import { toast } from "sonner";
 
 const breadcrumbs: BreadcrumbItem[] = [
   {
@@ -33,19 +29,7 @@ interface AlbumForm {
   images?: File[];
 }
 
-interface PageProps {
-  images: ImageType[];
-  tags: Tag[];
-  [x: string]: unknown;
-}
-
 export default function CreateImage() {
-  const { tags } = usePage<PageProps>().props;
-  const [isLoading, setIsLoading] = useState(false);
-  const tagsList: { value: string; label: string }[] = tags.map((tag) => ({
-    value: tag.id.toString(),
-    label: tag.name,
-  }));
 
   const { data, setData, post, processing, errors, setError } = useForm<Required<AlbumForm>>({
     title: "",
@@ -99,28 +83,28 @@ export default function CreateImage() {
     })
   };
 
-  const handleNewTagSubmit = async (name: string) => {
-    try {
-      setIsLoading(true)
-      const response = await axios.post(route('tags.store', { no_redirect: true }), { name });
-      const newTag = response.data.tag as Tag
-      router.reload({
-        only: ["tags"],
-        onFinish: () => {
-          toast.success("¡Etiqueta creada correctamente!", {
-            closeButton: true,
-            duration: 3000,
-            position: 'top-right',
-          });
-          setIsLoading(false)
-        }
-      })
-      return newTag.id.toString();
-    } catch (error) {
-      toast.error("Hubo un error al crear la etiqueta.");
-      throw error;
-    }
-  };
+  // const handleNewTagSubmit = async (name: string) => {
+  //   try {
+  //     setIsLoading(true)
+  //     const response = await axios.post(route('tags.store', { no_redirect: true }), { name });
+  //     const newTag = response.data.tag as Tag
+  //     router.reload({
+  //       only: ["tags"],
+  //       onFinish: () => {
+  //         toast.success("¡Etiqueta creada correctamente!", {
+  //           closeButton: true,
+  //           duration: 3000,
+  //           position: 'top-right',
+  //         });
+  //         setIsLoading(false)
+  //       }
+  //     })
+  //     return newTag.id.toString();
+  //   } catch (error) {
+  //     toast.error("Hubo un error al crear la etiqueta.");
+  //     throw error;
+  //   }
+  // };
 
   return (
     <AppLayout breadcrumbs={breadcrumbs}>
@@ -130,7 +114,7 @@ export default function CreateImage() {
         backRoute="albums.index"
         onSubmit={handleSubmit}
         submitText="Crear álbum"
-        processing={processing || isLoading}
+        processing={processing}
         onProcessText="Creando álbum..."
       >
         {/* Titulo del album */}
@@ -150,7 +134,7 @@ export default function CreateImage() {
         />
 
         {/* Etiquetas */}
-        <FormField
+        {/* <FormField
           id="tags"
           label="Etiquetas"
           inputType="custom"
@@ -169,7 +153,7 @@ export default function CreateImage() {
                         maxCount={3}
                         handleCommandSubmit={handleNewTagSubmit}
                       />
-        </FormField>
+        </FormField> */}
 
 
         {/* Multiple File Upload Field */}

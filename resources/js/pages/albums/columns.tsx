@@ -6,9 +6,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { DataTableColumnHeader } from "@/components/common/data-table-column-header";
 import { ConfirmDialog } from "@/components/common/confirm-dialog";
 import { Link } from "@inertiajs/react";
-import { Tag } from "../tags/columns";
 import { Image as ImageType } from "../images/columns";
-import { Badge } from "@/components/ui/badge";
 
 // This type is used to define the shape of our data.
 export type Album = {
@@ -16,7 +14,6 @@ export type Album = {
   title: string;
   description: string;
   cover_image?: string;
-  tags: Tag[];
   images: ImageType[];
   images_count: number;
   created_at: string;
@@ -144,23 +141,23 @@ export const createColumns = (
         );
       }
     },
-    {
-      id: "tags",
-      accessorKey: "tags",
-      header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Etiquetas" />
-      ),
-      cell: ({ row }) => {
-        const album = row.original;
-        return (
-          <div className="flex max-w-[150px] flex-wrap gap-2">
-            {album.tags.map((tag) => (
-              <Badge>{tag.name}</Badge>
-            ))}
-          </div>
-        );
-      },
-    },
+    // {
+    //   id: "tags",
+    //   accessorKey: "tags",
+    //   header: ({ column }) => (
+    //     <DataTableColumnHeader column={column} title="Etiquetas" />
+    //   ),
+    //   cell: ({ row }) => {
+    //     const album = row.original;
+    //     return (
+    //       <div className="flex max-w-[150px] flex-wrap gap-2">
+    //         {album.tags.map((tag) => (
+    //           <Badge>{tag.name}</Badge>
+    //         ))}
+    //       </div>
+    //     );
+    //   },
+    // },
     {
       id: "created_at",
       accessorKey: "created_at",

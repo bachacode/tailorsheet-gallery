@@ -1,15 +1,11 @@
 import AppLayout from "@/layouts/app-layout";
 import { BreadcrumbItem } from "@/types";
-import { Head, router, useForm, usePage } from "@inertiajs/react";
+import { Head, useForm, usePage } from "@inertiajs/react";
 import { Image as ImageType } from "../images/columns";
 import { Tag } from "../tags/columns";
 import { Album } from "./columns";
 import AppFormLayout from "@/layouts/app/app-form-layout";
 import FormField from "@/components/common/form-field";
-import { MultiSelectImages } from "@/components/images/multiselect-images";
-import axios from "axios";
-import { toast } from "sonner";
-import { useState } from "react";
 
 const breadcrumbs: BreadcrumbItem[] = [
   {
@@ -29,7 +25,6 @@ const breadcrumbs: BreadcrumbItem[] = [
 interface AlbumForm {
   title: string;
   description: string;
-  tags?: string[];
 }
 
 interface PageProps {
@@ -40,17 +35,11 @@ interface PageProps {
 }
 
 export default function CreateImage() {
-  const { album, tags } = usePage<PageProps>().props;
-  const [isLoading, setIsLoading] = useState(false);
-  const tagsList: { value: string; label: string }[] = tags.map((tag) => ({
-    value: tag.id.toString(),
-    label: tag.name,
-  }));
+  const { album } = usePage<PageProps>().props;
 
   const { data, setData, patch, processing, errors } = useForm<Required<AlbumForm>>({
     title: album.title,
-    description: album.description,
-    tags: album.tags.map((tag) => tag.id.toString())
+    description: album.description
   });
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -58,28 +47,28 @@ export default function CreateImage() {
     patch(route("albums.update", { id: album.id }))
   };
 
-  const handleNewTagSubmit = async (name: string) => {
-    try {
-      setIsLoading(true)
-      const response = await axios.post(route('tags.store', { no_redirect: true }), { name });
-      const newTag = response.data.tag as Tag
-      router.reload({
-        only: ["tags"],
-        onFinish: () => {
-          toast.success("¡Etiqueta creada correctamente!", {
-            closeButton: true,
-            duration: 3000,
-            position: 'top-right',
-          });
-          setIsLoading(false)
-        }
-      })
-      return newTag.id.toString();
-    } catch (error) {
-      toast.error("Hubo un error al crear la etiqueta.");
-      throw error;
-    }
-  };
+  // const handleNewTagSubmit = async (name: string) => {
+  //   try {
+  //     setIsLoading(true)
+  //     const response = await axios.post(route('tags.store', { no_redirect: true }), { name });
+  //     const newTag = response.data.tag as Tag
+  //     router.reload({
+  //       only: ["tags"],
+  //       onFinish: () => {
+  //         toast.success("¡Etiqueta creada correctamente!", {
+  //           closeButton: true,
+  //           duration: 3000,
+  //           position: 'top-right',
+  //         });
+  //         setIsLoading(false)
+  //       }
+  //     })
+  //     return newTag.id.toString();
+  //   } catch (error) {
+  //     toast.error("Hubo un error al crear la etiqueta.");
+  //     throw error;
+  //   }
+  // };
 
   return (
     <AppLayout breadcrumbs={breadcrumbs}>
@@ -90,11 +79,11 @@ export default function CreateImage() {
         backRoute="albums.index"
         onSubmit={handleSubmit}
         submitText="Guardar cambios"
-        processing={processing || isLoading}
+        processing={processing}
         onProcessText="Guardando cambios..."
       >
 
-        <div className="grid gap-4 grid-cols-2">
+        <div className="">
           {/* Titulo del album */}
           <FormField
             id="title"
@@ -111,7 +100,7 @@ export default function CreateImage() {
             }}
           />
 
-          {/* Etiquetas */}
+          {/* Etiquetas
           <FormField
             id="tags"
             label="Etiquetas"
@@ -131,7 +120,7 @@ export default function CreateImage() {
               maxCount={3}
               handleCommandSubmit={handleNewTagSubmit}
             />
-          </FormField>
+          </FormField> */}
         </div>
         {/* Descripcion */}
         <FormField

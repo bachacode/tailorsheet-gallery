@@ -17,7 +17,7 @@ class AlbumController extends Controller
         $albums = $request
             ->user()
             ->albums()
-            ->with(['tags', 'images'])
+            ->with(['images'])
             ->withCount('images')
             ->latest()
             ->get();
@@ -33,11 +33,9 @@ class AlbumController extends Controller
     public function create(Request $request)
     {
         $images = $request->user()->images()->with('tags')->latest()->get();
-        $tags = $request->user()->tags()->latest()->get();
 
         return inertia('albums/create', [
             'images' => $images,
-            'tags' => $tags
         ]);
     }
 
@@ -50,8 +48,6 @@ class AlbumController extends Controller
             'title' => 'required|string|max:255',
             'description' => 'nullable|string|max:255',
             'images.*' => 'required|image|max:51200',
-            'tags' => 'nullable|array',
-            'tags.*' => 'integer|exists:tags,id',
         ]);
 
         $images = [];
@@ -74,7 +70,7 @@ class AlbumController extends Controller
             'title' => $request->title,
             'description' => $request->description
         ]);
-        $album->tags()->sync($request->tags);
+
         $album->images()->sync($images);
 
         return redirect()->route('albums.index')->with('success', '¡Álbum creado correctamente!');
@@ -103,13 +99,8 @@ class AlbumController extends Controller
             return to_route('albums.index')->with('error', $response->message());
         }
 
-        $album->load('tags');
-
-        $tags = $request->user()->tags()->latest()->get();
-
         return inertia('albums/edit', [
-            'album' => $album,
-            'tags' => $tags
+            'album' => $album
         ]);
     }
 
@@ -128,8 +119,6 @@ class AlbumController extends Controller
             'title' => 'required|string|max:255',
             'description' => 'nullable|string|max:255',
             'cover_image' => 'nullable|string|max:255',
-            'tags' => 'nullable|array',
-            'tags.*' => 'integer|exists:tags,id',
         ]);
 
         $album->update([
@@ -137,8 +126,6 @@ class AlbumController extends Controller
             'description' => $request->description,
             'cover_image' => $request->cover_image
         ]);
-
-        $album->tags()->sync($request->tags);
 
         return redirect()->route('albums.index')->with('success', '¡Álbum actualizado correctamente!');
     }
