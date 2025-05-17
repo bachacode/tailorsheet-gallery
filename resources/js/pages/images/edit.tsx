@@ -66,11 +66,6 @@ export default function EditImage() {
       router.reload({
         only: ["tags"],
         onFinish: () => {
-          toast.success("¡Etiqueta creada correctamente!", {
-            closeButton: true,
-            duration: 3000,
-            position: 'top-right',
-          });
           setIsLoading(false)
         }
       })
