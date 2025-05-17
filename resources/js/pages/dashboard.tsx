@@ -75,7 +75,6 @@ interface PageProps {
 export default function Dashboard() {
   const { user, albums } = usePage<PageProps>().props
   const [view, setView] = useState<'table' | 'grid'>('grid');
-  console.log(albums);
   const handleDelete = (id: number) => {
     router.delete(route('albums.destroy', { id: id }), {
       onSuccess: () => {
