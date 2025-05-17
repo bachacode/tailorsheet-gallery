@@ -14,10 +14,11 @@ import React from "react"
 interface ConfirmDialogProps {
   dialogDescription: string
   children: React.ReactNode
+  isDisabled?: boolean
   handleConfirm: () => void
 }
 
-export function ConfirmDialog({ dialogDescription, children, handleConfirm }: ConfirmDialogProps) {
+export function ConfirmDialog({ dialogDescription, children, isDisabled, handleConfirm }: ConfirmDialogProps) {
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>{children}</AlertDialogTrigger>
@@ -30,7 +31,7 @@ export function ConfirmDialog({ dialogDescription, children, handleConfirm }: Co
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel className="cursor-pointer">Cancelar</AlertDialogCancel>
-          <AlertDialogAction onClick={handleConfirm} className="cursor-pointer">Confirmar</AlertDialogAction>
+          <AlertDialogAction disabled={isDisabled} onClick={handleConfirm} className="cursor-pointer">Confirmar</AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
